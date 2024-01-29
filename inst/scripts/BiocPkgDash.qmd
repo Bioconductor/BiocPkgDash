@@ -10,9 +10,22 @@ server: shiny
 
 ```{r}
 #| context: setup
+#| include: false
+
 library(BiocPkgDash)
-library(shinytoastr)
 ```
+
+```{r}
+#| context: data
+#| include: false
+
+version <- BiocManager:::.version_bioc(type = "devel")
+pkgs <-  BiocPkgDash:::renderMaintained(
+    email = "maintainer@bioconductor\\.org",
+    version = version
+)
+```
+
 
 # {.sidebar}
 
@@ -150,16 +163,20 @@ DT::dataTableOutput("status_table")
 emailValue <- reactiveVal("maintainer@bioconductor.org")
 
 main_data <- reactive({
-    tryCatch({
+    if (
+        emailValue() %in%
+            c("maintainer@bioconductor\\.org", "maintainer@bioconductor.org")
+    )
+        pkgs
+    else
         BiocPkgDash:::renderMaintained(
             email = emailValue(),
             version = input$biocver
         )
-    }, error = function(e) {
-        shinytoastr::toastr_error(
-            conditionMessage(e), "Invalid e-mail address", timeOut = 3000
-        )
-    })
+})
+
+output$pkg_count <- renderText({
+    nrow(main_data())
 })
 
 observeEvent(input$submit, {
