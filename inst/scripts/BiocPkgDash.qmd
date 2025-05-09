@@ -233,7 +233,7 @@ output$dl_count <- renderText({
             dl_pkg <- suppressWarnings({
                 BiocPkgTools::pkgDownloadStats(pkg)
             })
-            dls <- dl_pkg[["Nb_of_distinct_IPs"]]
+            dls <- sum(dl_pkg[["Nb_of_distinct_IPs"]])
             if (!length(dls))
                 0
             else
