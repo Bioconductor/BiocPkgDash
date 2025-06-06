@@ -1,16 +1,23 @@
-dataServer <- function(id, email, biocver) {
+dataServer <- function(id, data) {
     moduleServer(
         id,
         function(input, output, session) {
             colsOfInterest <- c(
-                "Package", "Version", "License", "NeedsCompilation", "Title",
-                "hasREADME", "hasNEWS", "hasINSTALL", "hasLICENSE",
+                "Package",
+                "Version",
+                "License",
+                "NeedsCompilation",
+                "Title",
+                "hasREADME",
+                "hasNEWS",
+                "hasINSTALL",
+                "hasLICENSE",
                 "dependencyCount"
             )
             output$data_out <- DT::renderDataTable({
                 DT::datatable(
                     BiocPkgDash:::renderMaintained(
-                        email = email(), version = biocver()
+                        data = data()
                     )[, colsOfInterest],
                     rownames = FALSE,
                     options = list(

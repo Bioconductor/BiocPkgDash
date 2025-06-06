@@ -38,6 +38,7 @@ BiocPkgDash <- function(...) {
         sidebarLayout(
             sidebarPanel(
                 biocverUI("biocver1"),
+                bioctypeUI("bioctype1"),
                 emailUI("email1"),
                 hr(),
                 HTML("Download the badge wall as an HTML fragment:"),
@@ -70,12 +71,63 @@ BiocPkgDash <- function(...) {
     )
 
     server <- function(input, output, session) {
+        rv <- reactiveValues(
+            maintainedData = NULL
+        )
+
         email <- emailServer("email1")
         biocver <- biocverServer("biocver1")
-        downloadServer("download1", email, biocver)
-        badgesServer("badges1", email, biocver)
-        statusServer("status1", email, biocver)
-        dataServer("data1", email, biocver)
+        bioctype <- bioctypeServer("bioctype1")
+
+        observeEvent(
+            list(email(), biocver(), bioctype()),
+            {
+                req(email(), biocver(), bioctype())
+                withProgress(
+                    message = "Fetching package data...",
+                    detail = "This may take a moment",
+                    value = 0.5,
+                    {
+                        tryCatch(
+                            {
+                                BiocPkgTools::biocMaintained(
+                                    main = email(),
+                                    version = biocver(),
+                                    pkgType = bioctype()
+                                )
+                            },
+                            error = function(e) {
+                                # Return empty dataframe with appropriate structure if error
+                                message("Error fetching data: ", e$message)
+                                rv$maintainedData <- NULL
+                            }
+                        )
+                    }
+                )
+            },
+            ignoreNULL = FALSE
+        )
+
+        getMaintainedData <- reactive({
+            rv$maintainedData
+        })
+
+        downloadServer("download1", data = getMainainedData())
+        badgesServer(
+            "badges1",
+            version = reactive(biocver()),
+            data = getMaintainedData()
+        )
+        statusServer(
+            "status1",
+            data = getMaintainedData()
+        )
+        dataServer(
+            "data1",
+            data = getMaintainedData()
+        )
+
+        # fmt: skip
         output$sessioninfo <- renderPrint({
             if (requireNamespace("sessioninfo", quietly = TRUE))
                 utils::capture.output(sessioninfo::session_info())

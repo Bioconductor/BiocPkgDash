@@ -9,7 +9,7 @@ pkgStatusPlot(
   main = "maintainer@bioconductor\\\\.org",
   status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
   stage = c("install", "buildsrc", "checksrc", "buildbin"),
-  pkgType = c("software", "data-experiment", "workflows", "data-annotation"),
+  pkgType = c("software", "data-experiment", "workflows", "data-annotation", "books"),
   data = NULL
 )
 }

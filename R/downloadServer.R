@@ -1,4 +1,4 @@
-downloadServer <- function(id, email, biocver) {
+downloadServer <- function(id, data) {
     moduleServer(
         id,
         function(input, output, session) {
@@ -10,8 +10,7 @@ downloadServer <- function(id, email, biocver) {
                 },
                 content = function(file) {
                     BiocPkgDash:::renderHTMLfrag(
-                        email = email(),
-                        version = biocver(),
+                        data = data(),
                         file = file
                     )
                 }

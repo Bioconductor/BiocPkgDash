@@ -22,7 +22,8 @@ library(BiocPkgDash)
 version <- BiocManager:::.version_bioc(type = "devel")
 pkgs <-  BiocPkgDash:::renderMaintained(
     email = "maintainer@bioconductor\\.org",
-    version = version
+    version = version,
+    pkgType = "software"
 )
 ```
 
@@ -145,7 +146,8 @@ main_data <- reactive({
     else
         BiocPkgDash:::renderMaintained(
             email = emailValue(),
-            version = input$biocver
+            version = input$biocver,
+            pkgType = input$bioctype
         )
 })
 
@@ -181,7 +183,7 @@ output$btnSend <- downloadHandler(
     },
     content = function(file) {
         BiocPkgDash:::renderHTMLfrag(
-            file = file, data = main_data()
+            file = file, version = input$biocver, data = main_data()
         )
     }
 )

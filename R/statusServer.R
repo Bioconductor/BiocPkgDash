@@ -1,14 +1,12 @@
-statusServer <- function(id, email, biocver) {
+statusServer <- function(id, data) {
     moduleServer(
         id,
         function(input, output, session) {
             output$status_out <- plotly::renderPlotly(
                 BiocPkgDash::pkgStatusPlot(
-                    version = biocver(),
-                    main = email()
+                    data = data()
                 )
             )
         }
     )
 }
-
