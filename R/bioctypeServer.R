@@ -1,11 +1,8 @@
 bioctypeServer <- function(id) {
-    moduleServer(id, function(input, output, session) {
-        return(
-            reactive(
-                {
-                    input$bioctype
-                }
-            )
-        )
-    })
+    moduleServer(
+        id,
+        function(input, output, session) {
+            reactive(input$bioctype)
+        }
+    )
 }
