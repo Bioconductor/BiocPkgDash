@@ -90,11 +90,12 @@ BiocPkgDash <- function(...) {
                     {
                         tryCatch(
                             {
-                                BiocPkgTools::biocMaintained(
-                                    main = email(),
-                                    version = biocver(),
-                                    pkgType = bioctype()
-                                )
+                                rv$maintainedData <-
+                                    BiocPkgTools::biocMaintained(
+                                        main = email(),
+                                        version = biocver(),
+                                        pkgType = bioctype()
+                                    )
                             },
                             error = function(e) {
                                 # Return empty dataframe with appropriate structure if error
@@ -112,19 +113,19 @@ BiocPkgDash <- function(...) {
             rv$maintainedData
         })
 
-        downloadServer("download1", data = getMainainedData())
+        downloadServer("download1", data = getMainainedData)
         badgesServer(
             "badges1",
             version = reactive(biocver()),
-            data = getMaintainedData()
+            data = getMaintainedData
         )
         statusServer(
             "status1",
-            data = getMaintainedData()
+            data = getMaintainedData
         )
         dataServer(
             "data1",
-            data = getMaintainedData()
+            data = getMaintainedData
         )
 
         # fmt: skip
