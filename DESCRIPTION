@@ -30,7 +30,7 @@ Suggests:
   sessioninfo
 License: Artistic-2.0
 Encoding: UTF-8
-URL: https://github.com/LiNk-NY/BiocPkgDash
-BugReports: https://github.com/LiNk-NY/BiocPkgDash/issues
+URL: https://github.com/Bioconductor/BiocPkgDash
+BugReports: https://github.com/Bioconductor/BiocPkgDash/issues
 RoxygenNote: 7.3.2
 Date: 2025-06-09
