@@ -138,7 +138,6 @@ BiocPkgDash <- function(...) {
             data = maintainedData
         )
 
-        # fmt: skip
         output$sessioninfo <- renderPrint({
             if (requireNamespace("sessioninfo", quietly = TRUE))
                 utils::capture.output(sessioninfo::session_info())
