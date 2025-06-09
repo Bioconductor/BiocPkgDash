@@ -19,10 +19,14 @@ library(BiocPkgDash)
 #| context: data
 #| include: false
 
-version <- BiocManager:::.version_bioc(type = "devel")
-pkgs <-  BiocPkgDash:::renderMaintained(
-    email = "maintainer@bioconductor\\.org",
-    version = version
+version <- BiocManager:::.version_bioc(type = "release")
+data <- BiocPkgTools::biocMaintained(
+    main = "maintainer@bioconductor.org",
+    version = version,
+    pkgType = "software"
+)
+pkgs <-  BiocPkgDash:::filterMaintained(
+    data = data
 )
 ```
 
@@ -35,6 +39,17 @@ radioButtons(
     label = "Bioconductor version:",
     choices = c("release", "devel"),
     selected = "release"
+)
+checkboxGroupInput(
+    inputId = "bioctype",
+    label = "Bioconductor package type:",
+    choices = c(
+        "software",
+        "data-experiment",
+        "data-annotation",
+        "workflows"
+    ),
+    selected = "software"
 )
 textInput(
     inputId = "email",
@@ -145,7 +160,8 @@ main_data <- reactive({
     else
         BiocPkgDash:::renderMaintained(
             email = emailValue(),
-            version = input$biocver
+            version = input$biocver,
+            pkgType = input$bioctype
         )
 })
 
@@ -204,7 +220,6 @@ output$data_out <- DT::renderDataTable({
 
 output$status_out <- plotly::renderPlotly(
     BiocPkgDash::pkgStatusPlot(
-        version = input$biocver,
         data = main_data()
     )
 )
@@ -212,7 +227,6 @@ output$status_out <- plotly::renderPlotly(
 output$status_table <- DT::renderDataTable({
     DT::datatable(
         BiocPkgDash::pkgStatusTable(
-            version = input$biocver,
             data = main_data()
         ),
         escape = FALSE,
