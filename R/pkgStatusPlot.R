@@ -38,35 +38,16 @@
 #' pkgStatusPlot()
 #' @export
 pkgStatusPlot <- function(
-    version = BiocManager::version(),
-    main = "maintainer@bioconductor\\.org",
+    data = NULL,
+    pkgType = c("software", "data-experiment", "workflows", "data-annotation"),
     status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
-    stage = c("install", "buildsrc", "checksrc", "buildbin"),
-    pkgType = c(
-        "software",
-        "data-experiment",
-        "workflows",
-        "data-annotation",
-        "books"
-    ),
-    data = NULL
+    stage = c("install", "buildsrc", "checksrc", "buildbin")
 ) {
     status <- match.arg(status, several.ok = TRUE)
     stage <- match.arg(stage, several.ok = TRUE)
     pkgType <- match.arg(pkgType, several.ok = TRUE)
 
-    if (version %in% c("release", "devel"))
-        version <- BiocManager:::.version_bioc(type = version)
-
-    if (is.null(data)) {
-        mainPkgs <- renderMaintained(
-            version = version,
-            email = main,
-            pkgType = pkgType
-        )
-    } else {
-        mainPkgs <- data
-    }
+    version <- BiocManager:::.version_bioc(type = "devel")
 
     sdat <-
         BiocPkgTools::biocBuildStatusDB(
@@ -75,7 +56,7 @@ pkgStatusPlot <- function(
         )
     names(sdat) <- c("Package", "Hostname", "Stage", "Status")
 
-    lmain <- sdat[["Package"]] %in% mainPkgs[["Package"]]
+    lmain <- sdat[["Package"]] %in% data[["Package"]]
     lstage <- sdat[["Stage"]] %in% stage
     lstatus <- sdat[["Status"]] %in% status
     statusPkgs <- sdat[lmain & lstage & lstatus, ]

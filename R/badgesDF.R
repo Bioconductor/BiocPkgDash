@@ -1,46 +1,31 @@
 .SHIELDS_URL <- "http://bioconductor.org/shields/build/"
 .CHECK_RESULTS_URL <- "http://bioconductor.org/checkResults/"
 
-renderMaintained <- function(
-    email,
-    version,
-    pkgType = c(
-        "software",
-        "data-experiment",
-        "workflows",
-        "data-annotation",
-        "books"
-    ),
-    data = NULL
+filterMaintained <- function(
+    data = NULL,
+    cols = c(
+        "Package",
+        "Version",
+        "License",
+        "NeedsCompilation",
+        "Title",
+        "hasREADME",
+        "hasNEWS",
+        "hasINSTALL",
+        "hasLICENSE",
+        "dependencyCount"
+    )
 ) {
-    ## annotation badges not supported
-    pkgType <- pkgType[pkgType != "data-annotation"]
-    # fmt: skip
-    if (!is.null(data))
-        maindf <- data
-    else
-        maindf <- biocMaintained(
-            main = email,
-            version = version,
-            pkgType = pkgType
-        )
-    maindf[["dependencyCount"]] <- as.integer(maindf[["dependencyCount"]])
-    if (!nrow(maindf)) stop("No packages found with maintainer: ", email)
-    maindf
+    if (length(cols)) data <- data[, cols]
+    if (!nrow(data)) stop("No packages found")
+    data[["dependencyCount"]] <- as.integer(data[["dependencyCount"]])
+    data
 }
 
-badgesDF <- function(email, version, pkgType, data = NULL) {
-    version <- BiocManager:::.version_bioc(type = version)
-    if (is.null(data)) {
-        maindf <- renderMaintained(
-            email = email,
-            version = version,
-            pkgType = pkgType
-        )
-    } else {
-        maindf <- data
-    }
-    pkgType <- .get_pkgType_from_URL(maindf[["Package"]], version)
+badgesDF <- function(data) {
+    if (missing(data)) stop("'data' argument is required")
+    version <- BiocManager:::.version_bioc(type = "devel")
+    pkgType <- .get_pkgType_from_URL(data[["Package"]], version)
     version <- c("release", "devel")
 
     templates <- c(
@@ -54,9 +39,9 @@ badgesDF <- function(email, version, pkgType, data = NULL) {
     names(templates) <- c("rshield", "dshield", "rresult", "dresult")
 
     ## adjust for missing package types
-    maindf <- maindf[match(names(pkgType), maindf[["Package"]]), ]
+    data <- data[match(names(pkgType), data[["Package"]]), ]
     urldf <- .build_urls_temp(
-        packages = maindf[["Package"]],
+        packages = data[["Package"]],
         pkgType = pkgType,
         templates = templates
     )
@@ -74,7 +59,7 @@ badgesDF <- function(email, version, pkgType, data = NULL) {
     )
 
     data.frame(
-        Package = maindf[["Package"]],
+        Package = data[["Package"]],
         `Bioc-release` = rellink,
         `Bioc-devel` = devlink,
         row.names = NULL,
@@ -91,22 +76,25 @@ badgesDF <- function(email, version, pkgType, data = NULL) {
     result <- lapply(
         templates,
         function(template, tdata) {
-            apply(tdata, 1L, function(x) {
-                whisker::whisker.render(
-                    data = x,
-                    template = template
-                )
-            })
+            apply(
+                tdata,
+                1L,
+                function(x) {
+                    whisker::whisker.render(
+                        template = template,
+                        data = x
+                    )
+                }
+            )
         },
         tdata = .data
     )
     cbind.data.frame(package = .data[["package"]], result)
 }
 
-renderHTMLfrag <- function(email, version, file, data = NULL) {
-    version <- BiocManager:::.version_bioc(type = version)
-    maindf <- renderMaintained(email = email, version = version, data = data)
-    pkgType <- .get_pkgType_from_URL(maindf[["Package"]], version)
+renderHTMLfrag <- function(file, data = NULL) {
+    version <- BiocManager:::.version_bioc(type = "devel")
+    pkgType <- .get_pkgType_from_URL(data[["Package"]], version)
 
     version <- c("release", "devel")
     templates <- c(
@@ -120,9 +108,9 @@ renderHTMLfrag <- function(email, version, file, data = NULL) {
     )
     names(templates) <- c("pkgurl", "rshield", "dshield", "rresult", "dresult")
     ## adjust for missing package types
-    maindf <- maindf[match(names(pkgType), maindf[["Package"]]), ]
+    data <- data[match(names(pkgType), data[["Package"]]), ]
     urldf <- .build_urls_temp(
-        packages = maindf[["Package"]],
+        packages = data[["Package"]],
         pkgType = pkgType,
         templates = templates
     )

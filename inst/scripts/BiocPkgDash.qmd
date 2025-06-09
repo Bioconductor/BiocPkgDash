@@ -214,7 +214,6 @@ output$status_out <- plotly::renderPlotly(
 output$status_table <- DT::renderDataTable({
     DT::datatable(
         BiocPkgDash::pkgStatusTable(
-            version = input$biocver,
             data = main_data()
         ),
         escape = FALSE,

@@ -5,33 +5,16 @@
 \title{A Summary Plot for Package Statuses}
 \usage{
 pkgStatusPlot(
-  version = BiocManager::version(),
-  main = "maintainer@bioconductor\\\\.org",
+  data = NULL,
+  pkgType = c("software", "data-experiment", "workflows", "data-annotation"),
   status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
-  stage = c("install", "buildsrc", "checksrc", "buildbin"),
-  pkgType = c("software", "data-experiment", "workflows", "data-annotation", "books"),
-  data = NULL
+  stage = c("install", "buildsrc", "checksrc", "buildbin")
 )
 }
 \arguments{
-\item{version}{character(1) the character version number
-as used to access the online build report. For
-example, "3.14". The default is the "current version"
-as given by \code{BiocManager::version()}. Note
-that this is a character vector of length one and not a number.}
-
-\item{main}{character(1) The regex for searching through the Maintainer
-column as obtained from \code{biocPkgList()}.}
-
-\item{status}{`character()` A vector of `INSTALL`, `build` and `check`
-statuses to include in the plot. These values are obtained from the
-`result` column in `BiocPkgTools::biocBuildReport()`. The default is all:
-`c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped")`.}
-
-\item{stage}{`character()` A vector of the Bioconductor Build System (BBS)
-stages to include in the plot. These values are obtained from the `stage`
-`BiocPkgTools::biocBuildReport()`. The default is all stages:
-`c("install", "buildsrc", "checksrc", "buildbin")`.}
+\item{data}{`tibble()` / `data.frame()` A data frame of maintained packages.
+This is used internally to avoid repeated calls to the
+[BiocPkgTools::biocMaintained()] function.}
 
 \item{pkgType}{\code{character(1)} The type of packages for which to get build
 status information for. Valid values are:
@@ -42,9 +25,15 @@ status information for. Valid values are:
 \item \code{workflows}: Workflow packages
 }}
 
-\item{data}{`tibble()` / `data.frame()` A data frame of maintained packages.
-This is used internally to avoid repeated calls to the
-[BiocPkgTools::biocMaintained()] function.}
+\item{status}{`character()` A vector of `INSTALL`, `build` and `check`
+statuses to include in the plot. These values are obtained from the
+`result` column in `BiocPkgTools::biocBuildReport()`. The default is all:
+`c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped")`.}
+
+\item{stage}{`character()` A vector of the Bioconductor Build System (BBS)
+stages to include in the plot. These values are obtained from the `stage`
+`BiocPkgTools::biocBuildReport()`. The default is all stages:
+`c("install", "buildsrc", "checksrc", "buildbin")`.}
 }
 \description{
 This function generates a stacked bar plot of package statuses for

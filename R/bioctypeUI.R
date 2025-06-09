@@ -7,9 +7,8 @@ bioctypeUI <- function(id, label = "bioctype") {
             choices = c(
                 "software",
                 "data-experiment",
-                "workflows",
                 "data-annotation",
-                "books"
+                "workflows"
             ),
             selected = "software"
         )

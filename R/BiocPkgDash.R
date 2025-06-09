@@ -41,7 +41,8 @@ BiocPkgDash <- function(...) {
                 bioctypeUI("bioctype1"),
                 emailUI("email1"),
                 hr(),
-                HTML("Download the badge wall as an HTML fragment:"),
+                HTML("Download badge wall:"),
+                br(),
                 downloadUI("download1"),
                 width = 2
             ),
@@ -71,61 +72,71 @@ BiocPkgDash <- function(...) {
     )
 
     server <- function(input, output, session) {
-        rv <- reactiveValues(
-            maintainedData = NULL
-        )
-
         email <- emailServer("email1")
         biocver <- biocverServer("biocver1")
         bioctype <- bioctypeServer("bioctype1")
 
-        observeEvent(
-            list(email(), biocver(), bioctype()),
-            {
-                req(email(), biocver(), bioctype())
-                withProgress(
-                    message = "Fetching package data...",
-                    detail = "This may take a moment",
-                    value = 0.5,
-                    {
-                        tryCatch(
-                            {
-                                rv$maintainedData <-
-                                    BiocPkgTools::biocMaintained(
-                                        main = email(),
-                                        version = biocver(),
-                                        pkgType = bioctype()
-                                    )
-                            },
-                            error = function(e) {
-                                # Return empty dataframe with appropriate structure if error
-                                message("Error fetching data: ", e$message)
-                                rv$maintainedData <- NULL
-                            }
-                        )
-                    }
-                )
-            },
-            ignoreNULL = FALSE
-        )
+        maintainedData <- reactive({
+            req(email(), biocver(), bioctype())
 
-        getMaintainedData <- reactive({
-            rv$maintainedData
+            withProgress(
+                message = "Fetching package data...",
+                detail = "This may take a moment",
+                value = 0.5,
+                {
+                    tryCatch(
+                        {
+                            result <- BiocPkgTools::biocMaintained(
+                                main = email(),
+                                version = biocver(),
+                                pkgType = bioctype()
+                            )
+
+                            if (!nrow(result)) {
+                                showNotification(
+                                    "No packages found with that email.",
+                                    type = "error",
+                                    duration = 10
+                                )
+                                return(NULL)
+                            }
+
+                            return(result)
+                        },
+                        error = function(e) {
+                            error_msg <- paste(
+                                "Error fetching data:",
+                                e$message
+                            )
+                            message(error_msg)
+                            showNotification(
+                                error_msg,
+                                type = "error",
+                                duration = 10
+                            )
+                            return(NULL)
+                        }
+                    )
+                }
+            )
         })
 
-        downloadServer("download1", data = getMainainedData)
+        downloadServer(
+            "download1",
+            data = maintainedData
+        )
         badgesServer(
             "badges1",
-            version = reactive(biocver()),
-            data = getMaintainedData
+            data = maintainedData
         )
         statusServer(
             "status1",
-            data = getMaintainedData
+            pkgtype = bioctype,
+            data = maintainedData
         )
         dataServer(
             "data1",
-            data = getMaintainedData
+            data = maintainedData
         )
 
         # fmt: skip
@@ -137,5 +148,5 @@ BiocPkgDash <- function(...) {
         })
     }
 
-    shinyApp(ui, server)
+    shinyApp(ui, server, ...)
 }

@@ -10,8 +10,8 @@ downloadServer <- function(id, data) {
                 },
                 content = function(file) {
                     BiocPkgDash:::renderHTMLfrag(
-                        data = data(),
-                        file = file
+                        file = file,
+                        data = data()
                     )
                 }
             )

@@ -5,23 +5,21 @@
 \title{Build a table of package build statuses}
 \usage{
 pkgStatusTable(
-  main = "maintainer@bioconductor\\\\.org",
-  version = BiocManager::version(),
-  status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
-  stage = c("install", "buildsrc", "checksrc", "buildbin"),
+  data,
   pkgType = c("software", "data-experiment", "workflows", "data-annotation"),
-  data = NULL
+  status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
+  stage = c("install", "buildsrc", "checksrc", "buildbin")
 )
 }
 \arguments{
-\item{main}{character(1) The regex for searching through the Maintainer
-column as obtained from \code{biocPkgList()}.}
+\item{data}{`tibble()` / `data.frame()` A data frame of maintained packages.
+This is used internally to avoid repeated calls to the
+[BiocPkgTools::biocMaintained()] function.}
 
-\item{version}{character(1) the character version number
-as used to access the online build report. For
-example, "3.14". The default is the "current version"
-as given by \code{BiocManager::version()}. Note
-that this is a character vector of length one and not a number.}
+\item{pkgType}{`character()` A vector of package types to include in the
+table. These values are passed to [BiocPkgTools::biocMaintained()].
+The default is all:
+`c("software", "data-experiment", "workflows", "data-annotation")`.}
 
 \item{status}{`character()` The status of the builders to include in the
 table. These values are obtained from the `result` column in
@@ -32,15 +30,6 @@ table. These values are obtained from the `result` column in
 stages to include in the plot. These values are obtained from the `stage`
 [BiocPkgTools::biocBuildReport()]. The default is all stages:
 `c("install", "buildsrc", "checksrc", "buildbin")`.}
-
-\item{pkgType}{`character()` A vector of package types to include in the
-table. These values are passed to [BiocPkgTools::biocMaintained()].
-The default is all:
-`c("software", "data-experiment", "workflows", "data-annotation")`.}
-
-\item{data}{`tibble()` / `data.frame()` A data frame of maintained packages.
-This is used internally to avoid repeated calls to the
-[BiocPkgTools::biocMaintained()] function.}
 }
 \description{
 This function builds a table of package build statuses for a
