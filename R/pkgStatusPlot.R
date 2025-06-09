@@ -39,15 +39,16 @@
 #' @export
 pkgStatusPlot <- function(
     data = NULL,
-    pkgType = c("software", "data-experiment", "workflows", "data-annotation"),
     status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
     stage = c("install", "buildsrc", "checksrc", "buildbin")
 ) {
+    if (missing(data))
+        stop("Argument 'data' from 'biocMaintained()' is required.")
     status <- match.arg(status, several.ok = TRUE)
     stage <- match.arg(stage, several.ok = TRUE)
-    pkgType <- match.arg(pkgType, several.ok = TRUE)
 
-    version <- BiocManager:::.version_bioc(type = "devel")
+    pkgType <- attr(data, "pkgType")
+    version <- attr(data, "version")
 
     sdat <-
         BiocPkgTools::biocBuildStatusDB(

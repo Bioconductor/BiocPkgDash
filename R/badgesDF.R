@@ -24,25 +24,25 @@ filterMaintained <- function(
 
 badgesDF <- function(data) {
     if (missing(data)) stop("'data' argument is required")
-    version <- BiocManager:::.version_bioc(type = "devel")
-    pkgType <- .get_pkgType_from_URL(data[["Package"]], version)
-    version <- c("release", "devel")
+    version <- attr(data, "version")
+    pkgTypes <- .get_pkgTypes_from_URL(data[["Package"]], version)
+    versions <- c("release", "devel")
 
     templates <- c(
-        paste0(.SHIELDS_URL, version, "/{{pkgType}}/{{package}}.svg"),
+        paste0(.SHIELDS_URL, versions, "/{{pkgType}}/{{package}}.svg"),
         paste0(
             .CHECK_RESULTS_URL,
-            version,
+            versions,
             "/{{pkgType}}-LATEST/{{package}}"
         )
     )
     names(templates) <- c("rshield", "dshield", "rresult", "dresult")
 
     ## adjust for missing package types
-    data <- data[match(names(pkgType), data[["Package"]]), ]
+    data <- data[match(names(pkgTypes), data[["Package"]]), ]
     urldf <- .build_urls_temp(
         packages = data[["Package"]],
-        pkgType = pkgType,
+        pkgType = pkgTypes,
         templates = templates
     )
     rellink <- .build_html_link(
@@ -94,15 +94,15 @@ badgesDF <- function(data) {
 
 renderHTMLfrag <- function(file, data = NULL) {
     version <- BiocManager:::.version_bioc(type = "devel")
-    pkgType <- .get_pkgType_from_URL(data[["Package"]], version)
+    pkgType <- .get_pkgTypes_from_URL(data[["Package"]], version)
 
-    version <- c("release", "devel")
+    versions <- c("release", "devel")
     templates <- c(
         paste0("https://bioconductor.org/packages/{{package}}"),
-        paste0(.SHIELDS_URL, version, "/{{pkgType}}/{{package}}.svg"),
+        paste0(.SHIELDS_URL, versions, "/{{pkgType}}/{{package}}.svg"),
         paste0(
             .CHECK_RESULTS_URL,
-            version,
+            versions,
             "/{{pkgType}}-LATEST/{{package}}"
         )
     )

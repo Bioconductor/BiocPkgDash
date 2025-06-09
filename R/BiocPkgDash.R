@@ -131,7 +131,6 @@ BiocPkgDash <- function(...) {
         )
         statusServer(
             "status1",
-            pkgtype = bioctype,
             data = maintainedData
         )
         dataServer(

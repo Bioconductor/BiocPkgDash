@@ -1,4 +1,4 @@
-.get_pkgType_from_URL <-
+.get_pkgTypes_from_URL <-
     function(packages, version) {
         repos <- BiocManager:::.repositories_bioc(version)
         pkgsdb <- available.packages(repos = repos)
@@ -72,39 +72,23 @@
 #'
 #' @export
 pkgStatusTable <- function(
-    main = "maintainer@bioconductor.org",
-    version = BiocManager::version(),
+    data = NULL,
     status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
-    stage = c("install", "buildsrc", "checksrc", "buildbin"),
-    pkgType = c(
-        "software",
-        "data-experiment",
-        "workflows",
-        "data-annotation"
-    ),
-    data = NULL
+    stage = c("install", "buildsrc", "checksrc", "buildbin")
 ) {
     if (missing(data))
         stop("Argument 'data' from 'biocMaintained()' is required.")
 
     status <- match.arg(status, several.ok = TRUE)
     stage <- match.arg(stage, several.ok = TRUE)
-    pkgType <- match.arg(pkgType, several.ok = TRUE)
 
-    if (version %in% c("release", "devel"))
-        version <- BiocManager:::.version_bioc(type = version)
+    pkgType <- attr(data, "pkgType")
+    version <- attr(data, "version")
 
-    if (is.null(data))
-        data <- renderMaintained(
-            version = version,
-            email = main,
-            pkgType = pkgType
-        )
-
-    biocType <- .get_pkgType_from_URL(data[["Package"]], version)
+    biocTypes <- .get_pkgTypes_from_URL(data[["Package"]], version)
     ## adjust for missing package types
-    data <- data[match(names(biocType), data[["Package"]]), ]
-    data <- dplyr::bind_cols(data, pkgType = biocType)
+    data <- data[match(names(biocTypes), data[["Package"]]), ]
+    data <- dplyr::bind_cols(data, pkgType = biocTypes)
     sdat <-
         BiocPkgTools::biocBuildStatusDB(
             version = version,
