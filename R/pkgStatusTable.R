@@ -1,21 +1,24 @@
-.get_pkgType_from_URL <-
-    function(packages, version)
-{
-    repos <- BiocManager:::.repositories_bioc(version)
-    pkgsdb <- available.packages(repos = repos)
-    repo_urls <- pkgsdb[rownames(pkgsdb) %in% packages, "Repository"]
-    tail_urls <- vapply(
-        strsplit(repo_urls, paste0(version, "/")), "[", character(1L), 2L
-    )
-    biocType <- gsub("/src/contrib", "", tail_urls)
-    pkgsnot <- !packages %in% names(biocType)
-    npkgs <- paste(packages[pkgsnot], collapse = ", ")
-    if (any(pkgsnot))
-        warning(
-            "Bioconductor package category not found for: ", npkgs
+.get_pkgTypes_from_URL <-
+    function(packages, version) {
+        repos <- BiocManager:::.repositories_bioc(version)
+        pkgsdb <- available.packages(repos = repos)
+        repo_urls <- pkgsdb[rownames(pkgsdb) %in% packages, "Repository"]
+        tail_urls <- vapply(
+            strsplit(repo_urls, paste0(version, "/")),
+            "[",
+            character(1L),
+            2L
         )
-    gsub("/", "-", biocType, fixed = TRUE)
-}
+        biocType <- gsub("/src/contrib", "", tail_urls)
+        pkgsnot <- !packages %in% names(biocType)
+        npkgs <- paste(packages[pkgsnot], collapse = ", ")
+        if (any(pkgsnot))
+            warning(
+                "Bioconductor package category not found for: ",
+                npkgs
+            )
+        gsub("/", "-", biocType, fixed = TRUE)
+    }
 
 .build_html_status <- function() {
     builder_url <- paste0(
@@ -24,7 +27,9 @@
         "{{Hostname}}-{{Stage}}.html"
     )
     paste0(
-        '<a href=', dQuote(builder_url), ' target="_blank">',
+        '<a href=',
+        dQuote(builder_url),
+        ' target="_blank">',
         '<span class="icon-status-{{Status}}">{{{svgIcon}}} {{Status}}</span>',
         '</a>'
     )
@@ -44,7 +49,9 @@
 #'   Annotation packages are not included in the table because they are not
 #'   built regularly by the BBS.
 #'
-#' @inheritParams BiocPkgTools::biocMaintained
+#' @param data `tibble()` / `data.frame()` A data frame of maintained packages.
+#'   This is used internally to avoid repeated calls to the
+#'   [BiocPkgTools::biocMaintained()] function.
 #'
 #' @param status `character()` The status of the builders to include in the
 #'   table. These values are obtained from the `result` column in
@@ -56,57 +63,37 @@
 #'   [BiocPkgTools::biocBuildReport()]. The default is all stages:
 #'   `c("install", "buildsrc", "checksrc", "buildbin")`.
 #'
-#' @param pkgType `character()` A vector of package types to include in the
-#'   table. These values are passed to [BiocPkgTools::biocMaintained()].
-#'   The default is all:
-#'   `c("software", "data-experiment", "workflows", "data-annotation")`.
-#'
-#' @param data `tibble()` / `data.frame()` A data frame of maintained packages.
-#'   This is used internally to avoid repeated calls to the
-#'   [BiocPkgTools::biocMaintained()] function.
-#'
 #' @export
-pkgStatusTable <-
-    function(
-        main = "maintainer@bioconductor\\.org",
-        version = BiocManager::version(),
-        status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
-        stage = c("install", "buildsrc", "checksrc", "buildbin"),
-        pkgType = c(
-            "software", "data-experiment", "workflows", "data-annotation"
-        ),
-        data = NULL
-    )
-{
+pkgStatusTable <- function(
+    data = NULL,
+    status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
+    stage = c("install", "buildsrc", "checksrc", "buildbin")
+) {
+    if (missing(data))
+        stop("Argument 'data' from 'biocMaintained()' is required.")
+
     status <- match.arg(status, several.ok = TRUE)
     stage <- match.arg(stage, several.ok = TRUE)
-    pkgType <- match.arg(pkgType, several.ok = TRUE)
 
-    if (version %in% c("release", "devel"))
-        version <- BiocManager:::.version_bioc(type = version)
+    pkgType <- attr(data, "pkgType")
+    version <- attr(data, "version")
 
-    if (is.null(data)) {
-        mainPkgs <- renderMaintained(
-            version = version, email = main, pkgType = pkgType
-        )
-    } else {
-        mainPkgs <- data
-    }
-
-    biocType <- .get_pkgType_from_URL(mainPkgs[["Package"]], version)
+    biocTypes <- .get_pkgTypes_from_URL(data[["Package"]], version)
     ## adjust for missing package types
-    mainPkgs <- mainPkgs[match(names(biocType), mainPkgs[["Package"]]), ]
-    mainPkgs <- dplyr::bind_cols(mainPkgs, pkgType = biocType)
+    data <- data[match(names(biocTypes), data[["Package"]]), ]
+    data <- dplyr::bind_cols(data, pkgType = biocTypes)
     sdat <-
-        BiocPkgTools::biocBuildStatusDB(version = version, pkgType = pkgType)
+        BiocPkgTools::biocBuildStatusDB(
+            version = version,
+            pkgType = pkgType
+        )
     names(sdat) <- c("Package", "Hostname", "Stage", "Status")
 
-    lmain <- sdat[["Package"]] %in% mainPkgs[["Package"]]
+    lmain <- sdat[["Package"]] %in% data[["Package"]]
     lstage <- sdat[["Stage"]] %in% stage
     lstatus <- sdat[["Status"]] %in% status
     statusPkgs <- sdat[lmain & lstage & lstatus, ]
-    if (!length(statusPkgs))
-        stop("No packages found with maintainer: ", main)
+    if (!length(statusPkgs)) stop("No packages found with maintainer: ", main)
 
     statusPkgs[["Stage"]] <- factor(
         statusPkgs[["Stage"]],
@@ -120,30 +107,41 @@ pkgStatusTable <-
     )
     statusPkgs <- tidyr::complete(
         statusPkgs,
-        .data[["Package"]], .data[["Hostname"]], .data[["Stage"]]
+        .data[["Package"]],
+        .data[["Hostname"]],
+        .data[["Stage"]]
     )
 
     statusPkgs <- dplyr::left_join(
         statusPkgs,
-        mainPkgs[, c("Package", "pkgType")],
+        data[, c("Package", "pkgType")],
         by = c("Package" = "Package")
     )
     statusPkgs[["StageLabel"]] <- factor(
         statusPkgs[["Stage"]],
         levels = c("install", "buildsrc", "checksrc", "buildbin"),
-        labels = c("Install", "Build Source", "Check Source", "Build Binary"),
+        labels = c(
+            "Install",
+            "Build Source",
+            "Check Source",
+            "Build Binary"
+        ),
         ordered = TRUE
     )
     glyphSuffix <- factor(
         statusPkgs[["Status"]],
         levels = c("ERROR", "WARNINGS", "TIMEOUT", "OK", "skipped", "NA"),
         labels = c(
-            "x-circle", "exclamation-circle", "clock",
-            "check2-circle", "dash-circle", "question-circle"
+            "x-circle",
+            "exclamation-circle",
+            "clock",
+            "check2-circle",
+            "dash-circle",
+            "question-circle"
         ),
         ordered = FALSE
     )
-    glyphSuffix[is.na(glyphSuffix )] <- "question-circle"
+    glyphSuffix[is.na(glyphSuffix)] <- "question-circle"
     statusPkgs <- dplyr::bind_cols(statusPkgs, glyphSuffix = glyphSuffix)
     statusPkgs[["Status"]][is.na(statusPkgs[["Status"]])] <- "NA"
     statusPkgs[["svgIcon"]] <- vapply(
@@ -160,15 +158,21 @@ pkgStatusTable <-
                 template = .build_html_status(),
                 data = c(as.list(x), version = ver)
             )
-        }, ver = as.character(version)
+        },
+        ver = as.character(version)
     )
     statusPkgs[["build_url"]] <- build_urls
 
     dplyr::select(
-        statusPkgs, "Package", "Hostname", "StageLabel", "build_url"
+        statusPkgs,
+        "Package",
+        "Hostname",
+        "StageLabel",
+        "build_url"
     ) |>
-    tidyr::pivot_wider(
-        names_from = "StageLabel", values_from = "build_url"
-    )
+        tidyr::pivot_wider(
+            names_from = "StageLabel",
+            values_from = "build_url",
+            values_fn = unique
+        )
 }
-

@@ -11,7 +11,9 @@
 #'   Actions and their result are not included in the Bioconductor Build System
 #'   (BBS) database.
 #'
-#' @inheritParams BiocPkgTools::biocMaintained
+#' @param data `tibble()` / `data.frame()` A data frame of maintained packages.
+#'   This is used internally to avoid repeated calls to the
+#'   [BiocPkgTools::biocMaintained()] function.
 #'
 #' @param status `character()` A vector of `INSTALL`, `build` and `check`
 #'   statuses to include in the plot. These values are obtained from the
@@ -23,10 +25,6 @@
 #'   `BiocPkgTools::biocBuildReport()`. The default is all stages:
 #'   `c("install", "buildsrc", "checksrc", "buildbin")`.
 #'
-#' @param data `tibble()` / `data.frame()` A data frame of maintained packages.
-#'   This is used internally to avoid repeated calls to the
-#'   [BiocPkgTools::biocMaintained()] function.
-#'
 #' @importFrom BiocPkgTools biocMaintained
 #' @importFrom ggplot2 ggplot aes geom_col facet_grid coord_flip
 #'   scale_fill_manual ggtitle theme element_blank
@@ -37,44 +35,31 @@
 #' @examples
 #' pkgStatusPlot()
 #' @export
-pkgStatusPlot <-
-    function(
-        version = BiocManager::version(),
-        main = "maintainer@bioconductor\\.org",
-        status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
-        stage = c("install", "buildsrc", "checksrc", "buildbin"),
-        pkgType = c(
-            "software", "data-experiment",
-            "workflows", "data-annotation"
-        ),
-        data = NULL
-    )
-{
+pkgStatusPlot <- function(
+    data = NULL,
+    status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
+    stage = c("install", "buildsrc", "checksrc", "buildbin")
+) {
+    if (missing(data))
+        stop("Argument 'data' from 'biocMaintained()' is required.")
     status <- match.arg(status, several.ok = TRUE)
     stage <- match.arg(stage, several.ok = TRUE)
-    pkgType <- match.arg(pkgType, several.ok = TRUE)
 
-    if (version %in% c("release", "devel"))
-        version <- BiocManager:::.version_bioc(type = version)
-
-    if (is.null(data)) {
-        mainPkgs <- renderMaintained(
-            version = version, email = main, pkgType = pkgType
-        )
-    } else {
-        mainPkgs <- data
-    }
+    pkgType <- attr(data, "pkgType")
+    version <- attr(data, "version")
 
     sdat <-
-        BiocPkgTools::biocBuildStatusDB(version = version, pkgType = pkgType)
+        BiocPkgTools::biocBuildStatusDB(
+            version = version,
+            pkgType = pkgType
+        )
     names(sdat) <- c("Package", "Hostname", "Stage", "Status")
 
-    lmain <- sdat[["Package"]] %in% mainPkgs[["Package"]]
+    lmain <- sdat[["Package"]] %in% data[["Package"]]
     lstage <- sdat[["Stage"]] %in% stage
     lstatus <- sdat[["Status"]] %in% status
     statusPkgs <- sdat[lmain & lstage & lstatus, ]
-    if (!length(statusPkgs))
-        stop("No packages found with maintainer: ", main)
+    if (!length(statusPkgs)) stop("No packages found with maintainer: ", main)
     statusPkgs[["Stage"]] <- factor(
         statusPkgs[["Stage"]],
         levels = c("install", "buildsrc", "checksrc", "buildbin"),
@@ -86,12 +71,18 @@ pkgStatusPlot <-
         ordered = TRUE
     )
     statusPkgs <- complete(
-        statusPkgs, .data[["Package"]], .data[["Hostname"]], .data[["Stage"]]
+        statusPkgs,
+        .data[["Package"]],
+        .data[["Hostname"]],
+        .data[["Stage"]]
     )
     statusPkgs <- full_join(
         statusPkgs,
         count(
-            statusPkgs, .data[["Hostname"]], .data[["Stage"]], .data[["Status"]]
+            statusPkgs,
+            .data[["Hostname"]],
+            .data[["Stage"]],
+            .data[["Status"]]
         ),
         by = c("Hostname", "Stage", "Status")
     )
@@ -102,20 +93,22 @@ pkgStatusPlot <-
     names(cat_colors) <- .BIOC_PKG_STATUSES
 
     p <- ggplot(
-            statusPkgs,
-            aes(
-                x = .data[["Hostname"]], y = .data[["Packages"]],
-                label = .data[["Package"]], tooltip = .data[["n"]]
-            )
-        ) +
+        statusPkgs,
+        aes(
+            x = .data[["Hostname"]],
+            y = .data[["Packages"]],
+            label = .data[["Package"]],
+            tooltip = .data[["n"]]
+        )
+    ) +
         geom_col(aes(fill = .data[["Status"]])) +
-        facet_grid(. ~  .data[["Stage"]]) +
+        facet_grid(. ~ .data[["Stage"]]) +
         coord_flip() +
         scale_fill_manual(values = cat_colors) +
         ggtitle(paste0("Bioconductor version ", as.character(version))) +
         theme(
             axis.text.x = element_blank(),
-            axis.ticks.x=element_blank()
+            axis.ticks.x = element_blank()
         )
     ggplotly(p, tooltip = c("label", "n", "Status", "Stage", "Hostname"))
 }

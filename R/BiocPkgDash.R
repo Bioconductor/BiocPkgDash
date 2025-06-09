@@ -38,9 +38,11 @@ BiocPkgDash <- function(...) {
         sidebarLayout(
             sidebarPanel(
                 biocverUI("biocver1"),
+                bioctypeUI("bioctype1"),
                 emailUI("email1"),
                 hr(),
-                HTML("Download the badge wall as an HTML fragment:"),
+                HTML("Download badge wall:"),
+                br(),
                 downloadUI("download1"),
                 width = 2
             ),
@@ -72,10 +74,70 @@ BiocPkgDash <- function(...) {
     server <- function(input, output, session) {
         email <- emailServer("email1")
         biocver <- biocverServer("biocver1")
-        downloadServer("download1", email, biocver)
-        badgesServer("badges1", email, biocver)
-        statusServer("status1", email, biocver)
-        dataServer("data1", email, biocver)
+        bioctype <- bioctypeServer("bioctype1")
+
+        maintainedData <- reactive({
+            req(email(), biocver(), bioctype())
+
+            withProgress(
+                message = "Fetching package data...",
+                detail = "This may take a moment",
+                value = 0.5,
+                {
+                    tryCatch(
+                        {
+                            result <- BiocPkgTools::biocMaintained(
+                                main = email(),
+                                version = biocver(),
+                                pkgType = bioctype()
+                            )
+
+                            if (!nrow(result)) {
+                                showNotification(
+                                    "No packages found with that email.",
+                                    type = "error",
+                                    duration = 10
+                                )
+                                return(NULL)
+                            }
+
+                            return(result)
+                        },
+                        error = function(e) {
+                            error_msg <- paste(
+                                "Error fetching data:",
+                                e$message
+                            )
+                            message(error_msg)
+                            showNotification(
+                                error_msg,
+                                type = "error",
+                                duration = 10
+                            )
+                            return(NULL)
+                        }
+                    )
+                }
+            )
+        })
+
+        downloadServer(
+            "download1",
+            data = maintainedData
+        )
+        badgesServer(
+            "badges1",
+            data = maintainedData
+        )
+        statusServer(
+            "status1",
+            data = maintainedData
+        )
+        dataServer(
+            "data1",
+            data = maintainedData
+        )
+
         output$sessioninfo <- renderPrint({
             if (requireNamespace("sessioninfo", quietly = TRUE))
                 utils::capture.output(sessioninfo::session_info())
@@ -84,5 +146,5 @@ BiocPkgDash <- function(...) {
         })
     }
 
-    shinyApp(ui, server)
+    shinyApp(ui, server, ...)
 }

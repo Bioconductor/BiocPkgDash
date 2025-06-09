@@ -1,56 +1,65 @@
 .SHIELDS_URL <- "http://bioconductor.org/shields/build/"
 .CHECK_RESULTS_URL <- "http://bioconductor.org/checkResults/"
 
-renderMaintained <- function(
-    email,
-    version,
-    pkgType = c("software", "data-experiment", "workflows", "data-annotation")
-) {
-    ## annotation badges not supported
-    pkgType <- pkgType[pkgType != "data-annotation"]
-    maindf <- biocMaintained(
-        main = email, version = version, pkgType = pkgType
+filterMaintained <- function(
+    data = NULL,
+    cols = c(
+        "Package",
+        "Version",
+        "License",
+        "NeedsCompilation",
+        "Title",
+        "hasREADME",
+        "hasNEWS",
+        "hasINSTALL",
+        "hasLICENSE",
+        "dependencyCount"
     )
-    maindf[["dependencyCount"]] <- as.integer(maindf[["dependencyCount"]])
-    if (!nrow(maindf))
-        stop("No packages found with maintainer: ", email)
-    maindf
+) {
+    if (length(cols)) data <- data[, cols]
+    if (!nrow(data)) stop("No packages found")
+    data[["dependencyCount"]] <- as.integer(data[["dependencyCount"]])
+    data
 }
 
-badgesDF <- function(email, data = NULL) {
-    version <- BiocManager:::.version_bioc(type = "devel")
-    if (is.null(data)) {
-        maindf <- renderMaintained(email = email, version = version)
-    } else {
-        maindf <- data
-    }
-    pkgType <- .get_pkgType_from_URL(maindf[["Package"]], version)
-    version <- c("release", "devel")
+badgesDF <- function(data) {
+    if (missing(data)) stop("'data' argument is required")
+    version <- attr(data, "version")
+    pkgTypes <- .get_pkgTypes_from_URL(data[["Package"]], version)
+    versions <- c("release", "devel")
 
     templates <- c(
-        paste0(.SHIELDS_URL, version, "/{{pkgType}}/{{package}}.svg"),
+        paste0(.SHIELDS_URL, versions, "/{{pkgType}}/{{package}}.svg"),
         paste0(
-            .CHECK_RESULTS_URL, version, "/{{pkgType}}-LATEST/{{package}}"
+            .CHECK_RESULTS_URL,
+            versions,
+            "/{{pkgType}}-LATEST/{{package}}"
         )
     )
     names(templates) <- c("rshield", "dshield", "rresult", "dresult")
 
     ## adjust for missing package types
-    maindf <- maindf[match(names(pkgType), maindf[["Package"]]), ]
+    data <- data[match(names(pkgTypes), data[["Package"]]), ]
     urldf <- .build_urls_temp(
-        packages = maindf[["Package"]],
-        pkgType = pkgType,
+        packages = data[["Package"]],
+        pkgType = pkgTypes,
         templates = templates
     )
     rellink <- .build_html_link(
-        urldf, "rshield", "rresult", "release"
+        urldf,
+        "rshield",
+        "rresult",
+        "release"
     )
     devlink <- .build_html_link(
-        urldf, "dshield", "dresult", "devel"
+        urldf,
+        "dshield",
+        "dresult",
+        "devel"
     )
 
     data.frame(
-        Package = maindf[["Package"]],
+        Package = data[["Package"]],
         `Bioc-release` = rellink,
         `Bioc-devel` = devlink,
         row.names = NULL,
@@ -64,40 +73,44 @@ badgesDF <- function(email, data = NULL) {
         package = packages,
         pkgType = pkgType
     )
-    result <- lapply(templates, function(template, tdata) {
-        apply(tdata, 1L, function(x) {
-            whisker::whisker.render(
-                data = x,
-                template = template
+    result <- lapply(
+        templates,
+        function(template, tdata) {
+            apply(
+                tdata,
+                1L,
+                function(x) {
+                    whisker::whisker.render(
+                        template = template,
+                        data = x
+                    )
+                }
             )
-        })
-    }, tdata = .data)
+        },
+        tdata = .data
+    )
     cbind.data.frame(package = .data[["package"]], result)
 }
 
-renderHTMLfrag <- function(email, file, data = NULL) {
+renderHTMLfrag <- function(file, data = NULL) {
     version <- BiocManager:::.version_bioc(type = "devel")
+    pkgType <- .get_pkgTypes_from_URL(data[["Package"]], version)
 
-    if (is.null(data)) {
-        maindf <- renderMaintained(email = email, version = version)
-    } else {
-        maindf <- data
-    }
-    pkgType <- .get_pkgType_from_URL(maindf[["Package"]], version)
-
-    version <- c("release", "devel")
+    versions <- c("release", "devel")
     templates <- c(
         paste0("https://bioconductor.org/packages/{{package}}"),
-        paste0(.SHIELDS_URL, version, "/{{pkgType}}/{{package}}.svg"),
+        paste0(.SHIELDS_URL, versions, "/{{pkgType}}/{{package}}.svg"),
         paste0(
-            .CHECK_RESULTS_URL, version, "/{{pkgType}}-LATEST/{{package}}"
+            .CHECK_RESULTS_URL,
+            versions,
+            "/{{pkgType}}-LATEST/{{package}}"
         )
     )
     names(templates) <- c("pkgurl", "rshield", "dshield", "rresult", "dresult")
     ## adjust for missing package types
-    maindf <- maindf[match(names(pkgType), maindf[["Package"]]), ]
+    data <- data[match(names(pkgType), data[["Package"]]), ]
     urldf <- .build_urls_temp(
-        packages = maindf[["Package"]],
+        packages = data[["Package"]],
         pkgType = pkgType,
         templates = templates
     )
@@ -111,7 +124,8 @@ renderHTMLfrag <- function(email, file, data = NULL) {
         "| Name | Bioc-release | Bioc-devel |",
         "|:-----:|:-----:|:-----:|",
         "{{#packages}}",
-        paste0("| [{{{package}}}]({{{pkgurl}}}) |",
+        paste0(
+            "| [{{{package}}}]({{{pkgurl}}}) |",
             " [![Bioconductor-release Build Status]({{{rshield}}})]({{{rresult}}}) |",
             " [![Bioconductor-devel Build Status]({{{dshield}}})]({{{dresult}}}) |"
         ),
@@ -128,8 +142,13 @@ renderHTMLfrag <- function(email, file, data = NULL) {
 
 .build_html_link <- function(.data, shieldCol, resultCol, version) {
     paste0(
-        '<a href=', dQuote(.data[[resultCol]]), ' target="_blank">',
-        '<img src=', dQuote(.data[[shieldCol]]),
-        ' alt="Bioconductor-', version, ' Build Status"></a>'
+        '<a href=',
+        dQuote(.data[[resultCol]]),
+        ' target="_blank">',
+        '<img src=',
+        dQuote(.data[[shieldCol]]),
+        ' alt="Bioconductor-',
+        version,
+        ' Build Status"></a>'
     )
 }

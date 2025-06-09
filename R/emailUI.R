@@ -3,7 +3,7 @@ emailUI <- function(id, label = "email") {
     tagList(
         textInput(
             inputId = ns("email"),
-            label = "Enter maintainer e-mail",
+            label = "Enter maintainer e-mail:",
             placeholder = "maintainer@bioconductor.org"
         ),
         actionButton(

@@ -1,11 +1,11 @@
-badgesServer <- function(id, email, biocver) {
+badgesServer <- function(id, data) {
     moduleServer(
         id,
         function(input, output, session) {
             output$badge_out <- DT::renderDataTable({
                 DT::datatable(
                     badgesDF(
-                        email = email()
+                        data = data()
                     ),
                     escape = FALSE,
                     rownames = FALSE,
