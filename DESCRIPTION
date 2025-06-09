@@ -13,7 +13,7 @@ Description: The package interactively renders an HTML table of packages
   associated with the given emails.
 Depends: R (>= 4.1.0), shiny
 Imports:
-  BiocPkgTools (>= 1.19.9),
+  BiocPkgTools (>= 1.27.6),
   BiocManager,
   bsicons,
   bslib,
