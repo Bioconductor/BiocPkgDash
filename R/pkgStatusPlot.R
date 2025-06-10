@@ -47,6 +47,7 @@ pkgStatusPlot <- function(
 
     pkgType <- attr(data, "pkgType")
     version <- attr(data, "version")
+    pkgTypes <- .get_pkgTypes_from_URL(data[["Package"]], version)
 
     sdat <-
         BiocPkgTools::biocBuildStatusDB(
@@ -70,6 +71,7 @@ pkgStatusPlot <- function(
         levels = .BIOC_PKG_STATUSES,
         ordered = TRUE
     )
+    statusPkgs[["PkgType"]] <- pkgTypes
     statusPkgs <- complete(
         statusPkgs,
         .data[["Package"]],
@@ -88,6 +90,19 @@ pkgStatusPlot <- function(
     )
     statusPkgs <- mutate(statusPkgs, Packages = 1)
 
+    statusPkgs <- mutate(
+        statusPkgs,
+        url = ifelse(
+            !is.na(.data[["Status"]]),
+            paste0(
+                "https://bioconductor.org/checkResults/", version, "/",
+                .data[["PkgType"]], "-LATEST/", .data[["Package"]], "/",
+                .data[["Hostname"]], "-", .data[["Stage"]], ".html"
+            ),
+            NA_character_
+        )
+    )
+
     cat_colors <-
         c('darkgreen', 'darkorange', 'darkred', 'purple', 'black', 'grey')
     names(cat_colors) <- .BIOC_PKG_STATUSES
@@ -98,7 +113,8 @@ pkgStatusPlot <- function(
             x = .data[["Hostname"]],
             y = .data[["Packages"]],
             label = .data[["Package"]],
-            tooltip = .data[["n"]]
+            tooltip = .data[["n"]],
+            customdata = .data[["url"]]
         )
     ) +
         geom_col(aes(fill = .data[["Status"]])) +
@@ -110,5 +126,24 @@ pkgStatusPlot <- function(
             axis.text.x = element_blank(),
             axis.ticks.x = element_blank()
         )
-    ggplotly(p, tooltip = c("label", "n", "Status", "Stage", "Hostname"))
+
+    p_interactive <-  ggplotly(
+        p, tooltip = c("label", "n", "Status", "Stage", "Hostname")
+    )
+
+    htmlwidgets::onRender(
+        p_interactive,
+        "
+        function(el, x) {
+            el.on('plotly_click', function(d) {
+                // get customdata (URL) from the clicked point
+                var url = d.points[0].customdata;
+                // if the url exists, open it in a new tab
+                if (url) {
+                    window.open(url, '_blank');
+                }
+            });
+        }
+        "
+    )
 }
