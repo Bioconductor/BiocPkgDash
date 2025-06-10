@@ -23,6 +23,7 @@ Imports:
   plotly,
   rmarkdown,
   shinytoastr,
+  tibble,
   tidyr,
   utils,
   whisker

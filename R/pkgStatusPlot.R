@@ -47,7 +47,11 @@ pkgStatusPlot <- function(
 
     pkgType <- attr(data, "pkgType")
     version <- attr(data, "version")
-    pkgTypes <- .get_pkgTypes_from_URL(data[["Package"]], version)
+
+    pkg_type_map <- tibble::tibble(
+        Package = data[["Package"]],
+        PkgType = .get_pkgTypes_from_URL(data[["Package"]], version)
+    )
 
     sdat <-
         BiocPkgTools::biocBuildStatusDB(
@@ -61,6 +65,12 @@ pkgStatusPlot <- function(
     lstatus <- sdat[["Status"]] %in% status
     statusPkgs <- sdat[lmain & lstage & lstatus, ]
     if (!nrow(statusPkgs)) stop("No packages found with maintainer: ", main)
+
+    statusPkgs <- dplyr::left_join(
+        statusPkgs,
+        pkg_type_map,
+        by = "Package"
+    )
     statusPkgs[["Stage"]] <- factor(
         statusPkgs[["Stage"]],
         levels = c("install", "buildsrc", "checksrc", "buildbin"),
@@ -71,7 +81,6 @@ pkgStatusPlot <- function(
         levels = .BIOC_PKG_STATUSES,
         ordered = TRUE
     )
-    statusPkgs[["PkgType"]] <- pkgTypes
     statusPkgs <- complete(
         statusPkgs,
         .data[["Package"]],
