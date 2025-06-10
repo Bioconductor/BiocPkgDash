@@ -57,8 +57,8 @@ BiocPkgDash <- function(...) {
                         statusUI("status1")
                     ),
                     tabPanel(
-                        "Data",
-                        dataUI("data1")
+                        "Metadata",
+                        metadataUI("data1")
                     ),
                     tabPanel(
                         "About",
@@ -133,7 +133,7 @@ BiocPkgDash <- function(...) {
             "status1",
             data = maintainedData
         )
-        dataServer(
+        metadataServer(
             "data1",
             data = maintainedData
         )

@@ -1,8 +1,8 @@
-dataServer <- function(id, data) {
+metadataServer <- function(id, data) {
     moduleServer(
         id,
         function(input, output, session) {
-            output$data_out <- DT::renderDataTable({
+            output$metadata_out <- DT::renderDataTable({
                 DT::datatable(
                     BiocPkgDash:::filterMaintained(
                         data = data()
