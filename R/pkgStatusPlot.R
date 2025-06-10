@@ -60,7 +60,7 @@ pkgStatusPlot <- function(
     lstage <- sdat[["Stage"]] %in% stage
     lstatus <- sdat[["Status"]] %in% status
     statusPkgs <- sdat[lmain & lstage & lstatus, ]
-    if (!length(statusPkgs)) stop("No packages found with maintainer: ", main)
+    if (!nrow(statusPkgs)) stop("No packages found with maintainer: ", main)
     statusPkgs[["Stage"]] <- factor(
         statusPkgs[["Stage"]],
         levels = c("install", "buildsrc", "checksrc", "buildbin"),
