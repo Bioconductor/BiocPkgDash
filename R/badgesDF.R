@@ -143,10 +143,10 @@ renderHTMLfrag <- function(file, data = NULL) {
 .build_html_link <- function(.data, shieldCol, resultCol, version) {
     paste0(
         '<a href=',
-        dQuote(.data[[resultCol]]),
+        dQuote(.data[[resultCol]], q = FALSE),
         ' target="_blank">',
         '<img src=',
-        dQuote(.data[[shieldCol]]),
+        dQuote(.data[[shieldCol]], q = FALSE),
         ' alt="Bioconductor-',
         version,
         ' Build Status"></a>'

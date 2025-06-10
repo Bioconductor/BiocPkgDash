@@ -28,7 +28,7 @@
     )
     paste0(
         '<a href=',
-        dQuote(builder_url),
+        dQuote(builder_url, q = FALSE),
         ' target="_blank">',
         '<span class="icon-status-{{Status}}">{{{svgIcon}}} {{Status}}</span>',
         '</a>'
