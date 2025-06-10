@@ -84,39 +84,41 @@ BiocPkgDash <- function(...) {
                 detail = "This may take a moment",
                 value = 0.5,
                 {
-                    tryCatch(
+                    result <- tryCatch(
                         {
-                            result <- BiocPkgTools::biocMaintained(
+                            BiocPkgTools::biocMaintained(
                                 main = email(),
                                 version = biocver(),
                                 pkgType = bioctype()
                             )
-
-                            if (!nrow(result)) {
-                                showNotification(
-                                    "No packages found with that email.",
-                                    type = "error",
-                                    duration = 10
-                                )
-                                return(NULL)
-                            }
-
-                            return(result)
                         },
                         error = function(e) {
-                            error_msg <- paste(
-                                "Error fetching data:",
-                                e$message
-                            )
-                            message(error_msg)
                             showNotification(
-                                error_msg,
+                                paste(
+                                    "An error occurred while fetching ",
+                                    "package data:",
+                                    e$message
+                                ),
                                 type = "error",
-                                duration = 10
+                                duration = 15
                             )
                             return(NULL)
                         }
                     )
+                    validate(
+                        need(
+                            !is.null(result) && nrow(result),
+                            paste(
+                                "No packages found for the email: ",
+                                email(),
+                                ".\nPlease verify the email address is correct",
+                                " and is associated with\npackages for the",
+                                " selected Bioconductor version and",
+                                " package type(s)."
+                            )
+                        )
+                    )
+                    return(result)
                 }
             )
         })
