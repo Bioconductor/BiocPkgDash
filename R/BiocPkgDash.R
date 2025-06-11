@@ -139,6 +139,7 @@ BiocPkgDash <- function(...) {
 
         downloadServer(
             "download1",
+            email = email,
             data = maintainedData
         )
         badgesServer(
