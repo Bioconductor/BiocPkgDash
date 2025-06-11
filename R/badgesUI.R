@@ -1,10 +1,10 @@
 badgesUI <- function(id, label = "badges") {
     ns <- NS(id)
     tagList(
-        shinycssloaders::withSpinner(
+        shinycustomloader::withLoader(
             DT::dataTableOutput(ns("badge_out")),
-            type = 5,
-            color = "#1a81c2"
+            type = "html",
+            loader = "dnaspin"
         )
     )
 }

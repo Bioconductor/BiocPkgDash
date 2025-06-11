@@ -22,7 +22,7 @@ Imports:
   ggplot2,
   plotly,
   rmarkdown,
-  shinycssloaders,
+  shinycustomloader,
   tibble,
   tidyr,
   utils,
