@@ -81,6 +81,16 @@ BiocPkgDash <- function(...) {
     )
 
     server <- function(input, output, session) {
+        observe({
+            query <- parseQueryString(session$clientData$url_search)
+            if (!is.null(query[["email"]])) {
+                updateTextInput(
+                    session = session,
+                    inputId = "email1-email",
+                    value = query[["email"]]
+                )
+            }
+        })
         email <- emailServer("email1")
         biocver <- biocverServer("biocver1")
         bioctype <- bioctypeServer("bioctype1")
