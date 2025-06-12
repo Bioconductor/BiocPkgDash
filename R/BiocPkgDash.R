@@ -42,7 +42,7 @@ BiocPkgDash <- function(...) {
             sidebarPanel(
                 biocverUI("biocver1"),
                 bioctypeUI("bioctype1"),
-                emailUI("email1"),
+                emailPkgsUI("emailPkgs1"),
                 hr(),
                 HTML("Download badge wall:"),
                 br(),
@@ -94,13 +94,12 @@ BiocPkgDash <- function(...) {
                 )
             }
         })
-        email <- emailServer("email1")
+        emailPkgs <- emailPkgsServer("emailPkgs1")
         biocver <- biocverServer("biocver1")
         bioctype <- bioctypeServer("bioctype1")
 
         maintainedData <- reactive({
-            req(email(), biocver(), bioctype())
-
+            req(biocver())
             withProgress(
                 message = "Fetching package data...",
                 detail = "This may take a moment",
@@ -108,11 +107,20 @@ BiocPkgDash <- function(...) {
                 {
                     result <- tryCatch(
                         {
-                            BiocPkgTools::biocMaintained(
-                                main = email(),
-                                version = biocver(),
-                                pkgType = bioctype()
-                            )
+                            if (is.null(pkgs()) || !length(pkgs())) {
+                                req(email(), bioctype())
+                                BiocPkgTools::biocMaintained(
+                                    main = email(),
+                                    version = biocver(),
+                                    pkgType = bioctype()
+                                )
+                            } else {
+                                req(pkgs())
+                                BiocPkgDash:::BiocPkgList(
+                                    packages = pkgs(),
+                                    version = biocver()
+                                )
+                            }
                         },
                         error = function(e) {
                             showNotification(
@@ -145,6 +153,9 @@ BiocPkgDash <- function(...) {
             )
         })
 
+        packagesServer(
+            "packages1"
+        )
         cardsServer(
             "cards1",
             data = maintainedData
