@@ -27,12 +27,15 @@ BiocPkgDash <- function(...) {
         titlePanel(
             windowTitle = "BiocPkgDash",
             title = div(
-                img(
-                    src = "images/bioconductor_logo_rgb_small.png",
-                    align = "right",
-                    style = "margin-right:10px"
+                style = paste(
+                    "display: flex;",
+                    "align-items: center;",
+                    "justify-content: space-between;"
                 ),
-                h1(id = "big-heading", "Bioconductor Package Dashboard")
+                h1(id = "big-heading", "Bioconductor Package Dashboard"),
+                img(
+                    src = "images/bioconductor_logo_rgb_small.png"
+                )
             )
         ),
         sidebarLayout(
