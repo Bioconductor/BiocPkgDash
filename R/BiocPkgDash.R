@@ -107,17 +107,16 @@ BiocPkgDash <- function(...) {
                 {
                     result <- tryCatch(
                         {
-                            if (is.null(pkgs()) || !length(pkgs())) {
-                                req(email(), bioctype())
+                            pkgs <- emailPkgs()$packages
+                            if (!length(pkgs)) {
                                 BiocPkgTools::biocMaintained(
-                                    main = email(),
+                                    main = emailPkgs()$email,
                                     version = biocver(),
                                     pkgType = bioctype()
                                 )
                             } else {
-                                req(pkgs())
                                 BiocPkgDash:::BiocPkgList(
-                                    packages = pkgs(),
+                                    packages = pkgs,
                                     version = biocver()
                                 )
                             }
@@ -139,9 +138,9 @@ BiocPkgDash <- function(...) {
                         need(
                             !is.null(result) && nrow(result),
                             paste(
-                                "No packages found for the email: ",
-                                email(),
-                                ".\nPlease verify the email address is correct",
+                                "No packages found for that email or ",
+                                "packages provided are not in Bioconductor.",
+                                "\nPlease verify the email address is correct",
                                 " and is associated with\npackages for the",
                                 " selected Bioconductor version and",
                                 " package type(s)."
@@ -153,14 +152,10 @@ BiocPkgDash <- function(...) {
             )
         })
 
-        packagesServer(
-            "packages1"
-        )
         cardsServer(
             "cards1",
             data = maintainedData
         )
-
         downloadServer(
             "download1",
             email = email,

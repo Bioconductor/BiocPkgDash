@@ -9,13 +9,17 @@ BiocPkgList <- function(packages, version = BiocManager::version()) {
     inPkgs <- packages %in% pkgs[["Package"]]
     if (!all(inPkgs)) {
         missings <- packages[!inPkgs]
-        warning(
+        showNotification(
             sprintf(
                 "Packages not found in Bioconductor package list: %s",
                 paste(missings, collapse = ", ")
-            )
+            ),
+            type = "warning",
+            duration = 10
         )
     }
 
-    pkgs[inPkgs, drop = FALSE]
+    filtered <- subset(pkgs, pkgs[["Package"]] %in% packages)
+    attr(filtered, "version") <- version
+    filtered
 }
