@@ -1,8 +1,8 @@
-emailServer <- function(id) {
+    emailServer <- function(id) {
     moduleServer(
         id,
         function(input, output, session) {
-            emailValue <- reactiveVal()
+            emailValue <- reactiveVal("maintainer@bioconductor.org")
             observe({
                 query <- parseQueryString(session$clientData$url_search)
                 if (!is.null(query[["email"]])) {
@@ -21,7 +21,12 @@ emailServer <- function(id) {
                     emailValue(input$email)
                 }
             )
-            return(emailValue)
+            return(
+                list(
+                    email = emailValue,
+                    submit_email = reactive(input$submit)
+                )
+            )
         }
     )
 }

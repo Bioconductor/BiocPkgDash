@@ -44,6 +44,8 @@ BiocPkgDash <- function(...) {
                 bioctypeUI("bioctype1"),
                 emailUI("email1"),
                 hr(),
+                pkgsUI("pkgs1"),
+                hr(),
                 HTML("Download badge wall:"),
                 br(),
                 downloadUI("download1"),
@@ -94,13 +96,12 @@ BiocPkgDash <- function(...) {
                 )
             }
         })
-        email <- emailServer("email1")
+        email_data <- emailServer("email1")
+        pkgs <- pkgsServer("pkgs1", reset_signal = email_data$submit_email)
         biocver <- biocverServer("biocver1")
         bioctype <- bioctypeServer("bioctype1")
 
         maintainedData <- reactive({
-            req(email(), biocver(), bioctype())
-
             withProgress(
                 message = "Fetching package data...",
                 detail = "This may take a moment",
@@ -108,11 +109,19 @@ BiocPkgDash <- function(...) {
                 {
                     result <- tryCatch(
                         {
-                            BiocPkgTools::biocMaintained(
-                                main = email(),
-                                version = biocver(),
-                                pkgType = bioctype()
-                            )
+                            if (length(pkgs())) {
+                                BiocPkgDash:::BiocPkgList(
+                                    packages = pkgs(),
+                                    version = biocver()
+                                )
+                            } else {
+                                req(email_data$email(), biocver(), bioctype())
+                                BiocPkgTools::biocMaintained(
+                                    main = email_data$email(),
+                                    version = biocver(),
+                                    pkgType = bioctype()
+                                )
+                            }
                         },
                         error = function(e) {
                             showNotification(
@@ -131,9 +140,9 @@ BiocPkgDash <- function(...) {
                         need(
                             !is.null(result) && nrow(result),
                             paste(
-                                "No packages found for the email: ",
-                                email(),
-                                ".\nPlease verify the email address is correct",
+                                "No packages found for that email or ",
+                                "packages provided are not in Bioconductor.",
+                                "\nPlease verify the email address is correct",
                                 " and is associated with\npackages for the",
                                 " selected Bioconductor version and",
                                 " package type(s)."
