@@ -18,3 +18,11 @@ downloadServer <- function(id, email, data) {
         }
     )
 }
+
+downloadUI <- function(id, label = "download") {
+    ns <- NS(id)
+    downloadButton(
+        outputId = ns("btnSend"),
+        label = "Download HTML"
+    )
+}

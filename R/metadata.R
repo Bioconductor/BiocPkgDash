@@ -1,22 +1,27 @@
-badgesServer <- function(id, data) {
+metadataServer <- function(id, data) {
     moduleServer(
         id,
         function(input, output, session) {
-            output$badge_out <- DT::renderDataTable({
+            output$metadata_out <- DT::renderDataTable({
                 DT::datatable(
-                    badgesDF(
+                    BiocPkgDash:::filterMaintained(
                         data = data()
                     ),
-                    escape = FALSE,
                     rownames = FALSE,
                     options = list(
                         dom = "ftp",
                         pageLength = 20,
-                        lengthChange = FALSE,
                         paging = TRUE
                     )
                 )
             })
         }
+    )
+}
+
+metadataUI <- function(id, label = "metadata") {
+    ns <- NS(id)
+    tagList(
+        DT::dataTableOutput(ns("metadata_out"))
     )
 }

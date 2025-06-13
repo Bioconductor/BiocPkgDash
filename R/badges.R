@@ -1,27 +1,33 @@
-statusServer <- function(id, data) {
+badgesServer <- function(id, data) {
     moduleServer(
         id,
         function(input, output, session) {
-            output$status_out <- plotly::renderPlotly(
-                BiocPkgDash::pkgStatusPlot(
-                    data = data()
-                )
-            )
-            output$status_table <- DT::renderDataTable(
+            output$badge_out <- DT::renderDataTable({
                 DT::datatable(
-                    BiocPkgDash::pkgStatusTable(
+                    badgesDF(
                         data = data()
                     ),
                     escape = FALSE,
                     rownames = FALSE,
                     options = list(
                         dom = "ftp",
-                        pageLength = 16,
+                        pageLength = 20,
                         lengthChange = FALSE,
                         paging = TRUE
                     )
                 )
-            )
+            })
         }
+    )
+}
+
+badgesUI <- function(id, label = "badges") {
+    ns <- NS(id)
+    tagList(
+        shinycustomloader::withLoader(
+            DT::dataTableOutput(ns("badge_out")),
+            type = "html",
+            loader = "dnaspin"
+        )
     )
 }
