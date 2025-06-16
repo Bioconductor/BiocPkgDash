@@ -44,6 +44,8 @@ BiocPkgDash <- function(...) {
                 bioctypeUI("bioctype1"),
                 emailUI("email1"),
                 hr(),
+                ghTopicUI("topic1"),
+                hr(),
                 pkgsUI("pkgs1"),
                 hr(),
                 HTML("Download badge wall:"),
@@ -97,9 +99,14 @@ BiocPkgDash <- function(...) {
             }
         })
         email_data <- emailServer("email1")
-        pkgs <- pkgsServer("pkgs1", reset_signal = email_data$submit_email)
         biocver <- biocverServer("biocver1")
+        topic_packages <- ghTopicServer("topic1", biocver = biocver)
         bioctype <- bioctypeServer("bioctype1")
+        pkgs <- pkgsServer(
+            "pkgs1",
+            reset_signal = email_data$submit_email,
+            populate_signal = topic_packages
+        )
 
         maintainedData <- reactive({
             withProgress(
@@ -109,9 +116,10 @@ BiocPkgDash <- function(...) {
                 {
                     result <- tryCatch(
                         {
-                            if (length(pkgs())) {
+                            if (length(pkgs()) || length(topic_packages())) {
+                                packages <- c(pkgs(), topic_packages())
                                 BiocPkgDash:::BiocPkgList(
-                                    packages = pkgs(),
+                                    packages = packages,
                                     version = biocver()
                                 )
                             } else {

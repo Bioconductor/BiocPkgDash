@@ -1,4 +1,4 @@
-pkgsServer <- function(id, reset_signal) {
+pkgsServer <- function(id, reset_signal, populate_signal) {
     moduleServer(
         id,
         function(input, output, session) {
@@ -26,6 +26,18 @@ pkgsServer <- function(id, reset_signal) {
                     packages(character(0L))
                 }
             )
+            observeEvent(
+                populate_signal(),
+                {
+                    pkgs <- populate_signal()
+                    updateTextAreaInput(
+                        session = session,
+                        inputId = "packages",
+                        value = paste(pkgs, collapse = ", ")
+                    )
+                },
+                ignoreInit = TRUE
+            )
             return(packages)
         }
     )
@@ -39,7 +51,7 @@ pkgsUI <- function(id, label = "packages") {
             label = "Enter package names:",
             value = "",
             placeholder = "BiocGenerics, BiocStyle, BiocBaseUtils, ...",
-            rows = 6,
+            rows = 4,
             width = "100%"
         ),
         actionButton(
