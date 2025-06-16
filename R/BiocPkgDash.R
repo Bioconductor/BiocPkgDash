@@ -73,6 +73,10 @@ BiocPkgDash <- function(...) {
                         statusUI("status1")
                     ),
                     tabPanel(
+                        "Dependencies",
+                        depReportUI("report1")
+                    ),
+                    tabPanel(
                         "Metadata",
                         metadataUI("data1")
                     ),
@@ -162,6 +166,10 @@ BiocPkgDash <- function(...) {
             )
         })
 
+        clicked_package <- badgesServer(
+            "badges1",
+            data = maintainedData
+        )
         cardsServer(
             "cards1",
             data = maintainedData
@@ -172,9 +180,10 @@ BiocPkgDash <- function(...) {
             email = email,
             data = maintainedData
         )
-        badgesServer(
-            "badges1",
-            data = maintainedData
+        depReportServer(
+            "report1",
+            package_name = clicked_package,
+            biocver = biocver
         )
         statusServer(
             "status1",

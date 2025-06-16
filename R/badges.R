@@ -9,6 +9,7 @@ badgesServer <- function(id, data) {
                     ),
                     escape = FALSE,
                     rownames = FALSE,
+                    selection = "single",
                     options = list(
                         dom = "ftp",
                         pageLength = 20,
@@ -17,6 +18,14 @@ badgesServer <- function(id, data) {
                     )
                 )
             })
+            selected_package <- reactive({
+                selected_row <- input$badge_out_rows_selected
+                if (length(selected_row))
+                    as.character(data()[selected_row, "Package"])
+                else
+                    NULL
+            })
+            return(selected_package)
         }
     )
 }
