@@ -1,4 +1,4 @@
-    emailServer <- function(id) {
+emailServer <- function(id) {
     moduleServer(
         id,
         function(input, output, session) {
@@ -16,7 +16,7 @@
             })
 
             observeEvent(
-                input$submit,
+                input$submit_email,
                 {
                     emailValue(input$email)
                 }
@@ -24,7 +24,7 @@
             return(
                 list(
                     email = emailValue,
-                    submit_email = reactive(input$submit)
+                    submit_email = reactive(input$submit_email)
                 )
             )
         }
@@ -40,7 +40,7 @@ emailUI <- function(id, label = "email") {
             placeholder = "maintainer@bioconductor.org"
         ),
         actionButton(
-            inputId = ns("submit"),
+            inputId = ns("submit_email"),
             label = "Submit",
             class = "btn-primary"
         )
