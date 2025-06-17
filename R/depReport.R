@@ -45,32 +45,35 @@ depReportServer <- function(id, package_name, biocver) {
                     )
                     return(NULL)
                 }
+                totals <- lengths(deps)
+                revdepslinks <- vapply(
+                    deps,
+                    function(p) {
+                        if (length(p))
+                            paste0(
+                                paste0(
+                                    "<a href='",
+                                    .build_report_link(p, biocver()),
+                                    "' target='_blank'>",
+                                    p,
+                                    "</a>"
+                                ),
+                                collapse = ", "
+                            )
+                        else
+                            ""
+                    },
+                    character(1L)
+                )
                 deps_df <- cbind.data.frame(
-                    DependencyType = c(
+                    ReverseDependency = c(
                         "Depends",
                         "Imports",
                         "LinkingTo",
                         "Suggests"
                     ),
-                    Packages = vapply(
-                        deps,
-                        function(p) {
-                            if (length(p))
-                                paste0(
-                                    paste0(
-                                        "<a href='",
-                                        .build_report_link(p, biocver()),
-                                        "' target='_blank'>",
-                                        p,
-                                        "</a>"
-                                    ),
-                                    collapse = ", "
-                                )
-                            else
-                                ""
-                        },
-                        character(1L)
-                    )
+                    Packages = revdepslinks,
+                    Total = totals
                 )
                 return(deps_df)
             })
