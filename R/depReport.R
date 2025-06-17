@@ -17,23 +17,27 @@ depReportServer <- function(id, package_name, biocver) {
                         "/"
                     )
                 }
-                deps <- tryCatch({
-                    BiocPkgTools::pkgBiocRevDeps(
-                        pkg = package_name(),
-                        version = biocver(),
-                        pkgType = "software",
-                        which = "most",
-                        only.bioc = TRUE
-                    )
-                }, error = function(e) {
-                    showNotification(
-                        paste(
-                            "Error fetching dependencies:", conditionMessage(e)
-                        ),
-                        type = "error"
-                    )
-                    return(NULL)
-                })
+                deps <- tryCatch(
+                    {
+                        BiocPkgTools::pkgBiocRevDeps(
+                            pkg = package_name(),
+                            version = biocver(),
+                            pkgType = "software",
+                            which = "most",
+                            only.bioc = TRUE
+                        )
+                    },
+                    error = function(e) {
+                        showNotification(
+                            paste(
+                                "Error fetching dependencies:",
+                                conditionMessage(e)
+                            ),
+                            type = "error"
+                        )
+                        return(NULL)
+                    }
+                )
                 if (is.null(deps) || !length(deps)) {
                     showNotification(
                         "No dependency data found for this package.",
@@ -42,8 +46,12 @@ depReportServer <- function(id, package_name, biocver) {
                     return(NULL)
                 }
                 deps_df <- cbind.data.frame(
-                    DependencyType =
-                        c("Depends", "Imports", "LinkingTo", "Suggests"),
+                    DependencyType = c(
+                        "Depends",
+                        "Imports",
+                        "LinkingTo",
+                        "Suggests"
+                    ),
                     Packages = vapply(
                         deps,
                         function(p) {
@@ -52,7 +60,9 @@ depReportServer <- function(id, package_name, biocver) {
                                     paste0(
                                         "<a href='",
                                         .build_report_link(p, biocver()),
-                                        "' target='_blank'>", p, "</a>"
+                                        "' target='_blank'>",
+                                        p,
+                                        "</a>"
                                     ),
                                     collapse = ", "
                                 )
@@ -83,5 +93,7 @@ depReportServer <- function(id, package_name, biocver) {
 
 depReportUI <- function(id) {
     ns <- NS(id)
-    DT::dataTableOutput(ns("dependency_table"))
+    DT::dataTableOutput(
+        ns("dependency_table")
+    )
 }
