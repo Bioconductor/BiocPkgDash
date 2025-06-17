@@ -15,7 +15,7 @@ ghTopicServer <- function(id, biocver) {
                         topic = query[["topic"]],
                         version = biocver()
                     )
-                    topicValue(packages)
+                    found_packages(packages)
                     pkgsval <- paste(packages, collapse = ", ")
                     updateTextAreaInput(
                         session = session,
