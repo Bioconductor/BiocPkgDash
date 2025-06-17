@@ -183,7 +183,8 @@ BiocPkgDash <- function(...) {
         depReportServer(
             "report1",
             package_name = clicked_package,
-            biocver = biocver
+            biocver = biocver,
+            bioctype = bioctype
         )
         statusServer(
             "status1",
