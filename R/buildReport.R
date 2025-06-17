@@ -46,13 +46,13 @@ depReportServer <- function(id, package_name, biocver) {
                         c("Depends", "Imports", "LinkingTo", "Suggests"),
                     Packages = vapply(
                         deps,
-                        function(x) {
-                            if (length(x))
+                        function(p) {
+                            if (length(p))
                                 paste0(
                                     paste0(
-                                        "(", x, ")[",
-                                        .build_report_link(x, biocver()),
-                                        "]"
+                                        "<a href='",
+                                        .build_report_link(p, biocver()),
+                                        "' target='_blank'>", p, "</a>"
                                     ),
                                     collapse = ", "
                                 )
@@ -70,6 +70,7 @@ depReportServer <- function(id, package_name, biocver) {
                 DT::datatable(
                     dependency_data(),
                     rownames = FALSE,
+                    escape = FALSE,
                     options = list(
                         pageLength = 10,
                         dom = "ftp"
