@@ -22,6 +22,9 @@ metadataServer <- function(id, data) {
 metadataUI <- function(id, label = "metadata") {
     ns <- NS(id)
     tagList(
-        DT::dataTableOutput(ns("metadata_out"))
+        shinybiocloader::withLoader(
+            DT::dataTableOutput(ns("metadata_out")),
+            loader = "biocspin"
+        )
     )
 }

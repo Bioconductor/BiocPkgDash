@@ -33,10 +33,9 @@ badgesServer <- function(id, data) {
 badgesUI <- function(id, label = "badges") {
     ns <- NS(id)
     tagList(
-        shinycustomloader::withLoader(
+        shinybiocloader::withLoader(
             DT::dataTableOutput(ns("badge_out")),
-            type = "html",
-            loader = "dnaspin"
+            loader = "biocspin"
         )
     )
 }

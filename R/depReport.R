@@ -137,7 +137,8 @@ depReportServer <- function(id, package_name, biocver, bioctype) {
 
 depReportUI <- function(id) {
     ns <- NS(id)
-    uiOutput(
-        ns("dependency_ui")
+    shinybiocloader::withLoader(
+        uiOutput(ns("dependency_ui")),
+        loader = "biocspin"
     )
 }

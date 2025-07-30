@@ -29,7 +29,10 @@ statusServer <- function(id, data) {
 statusUI <- function(id, label = "status") {
     ns <- NS(id)
     tagList(
-        plotly::plotlyOutput(ns("status_out")),
+        shinybiocloader::withLoader(
+            plotly::plotlyOutput(ns("status_out")),
+            loader = "biocspin"
+        ),
         DT::dataTableOutput(ns("status_table"))
     )
 }

@@ -8,6 +8,9 @@ if (!requireNamespace("remotes", quietly = TRUE))
 
 options(repos = BiocManager::repositories())
 
+if (!requireNamespace("shinybiocloader", quietly = TRUE))
+    BiocManager::install("LiNk-NY/shinybiocloader")
+
 if (!requireNamespace("BiocPkgDash", quietly = TRUE))
     BiocManager::install("Bioconductor/BiocPkgDash")
 

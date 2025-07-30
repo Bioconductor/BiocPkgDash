@@ -23,13 +23,15 @@ Imports:
   ggplot2,
   plotly,
   rmarkdown,
-  shinycustomloader,
+  shinybiocloader,
   tibble,
   tidyr,
   utils,
   whisker
 Suggests:
   sessioninfo
+Remotes:
+  LiNk-NY/shinybiocloader
 License: Artistic-2.0
 Encoding: UTF-8
 URL: https://github.com/Bioconductor/BiocPkgDash
