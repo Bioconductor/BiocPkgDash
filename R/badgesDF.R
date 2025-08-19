@@ -1,5 +1,7 @@
 .SHIELDS_URL <- "http://bioconductor.org/shields/build/"
 .CHECK_RESULTS_URL <- "http://bioconductor.org/checkResults/"
+.CODECOV_BADGE_URL <- "https://codecov.io/github/"
+.CODECOV_APP_URL <- "https://app.codecov.io/github/"
 
 filterMaintained <- function(
     data = NULL,
@@ -13,7 +15,8 @@ filterMaintained <- function(
         "hasNEWS",
         "hasINSTALL",
         "hasLICENSE",
-        "dependencyCount"
+        "dependencyCount",
+        "BugReports"
     )
 ) {
     if (length(cols)) data <- data[, cols]
@@ -27,6 +30,9 @@ badgesDF <- function(data) {
     version <- attr(data, "version")
     pkgTypes <- .get_pkgTypes_from_URL(data[["Package"]], version)
     versions <- c("release", "devel")
+    codecov <- .get_codecov_from_BugReports(
+        data[["BugReports"]], data[["Package"]]
+    )
 
     templates <- c(
         paste0(.SHIELDS_URL, versions, "/{{pkgType}}/{{package}}.svg"),
@@ -62,6 +68,7 @@ badgesDF <- function(data) {
         Package = data[["Package"]],
         `Bioc-release` = rellink,
         `Bioc-devel` = devlink,
+        Codecov = codecov,
         row.names = NULL,
         check.names = FALSE
     )
@@ -150,5 +157,21 @@ renderHTMLfrag <- function(file, data = NULL) {
         ' alt="Bioconductor-',
         version,
         ' Build Status"></a>'
+    )
+}
+
+.build_codecov_badge <- function(url, owner, package) {
+    imgsrc <- whisker::whisker.render(
+        template = paste0(
+            .CODECOV_BADGE_URL, "{{owner}}/{{package}}/graph/badge.svg"
+        ),
+        data = list(owner = owner, package = package)
+    )
+    paste0(
+        '<a href=',
+        dQuote(url, q = FALSE),
+        ' target="_blank">',
+        '<img src="', imgsrc, '"',
+        ' alt="Codecov"></a>'
     )
 }

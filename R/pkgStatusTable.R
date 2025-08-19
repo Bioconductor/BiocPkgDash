@@ -20,6 +20,28 @@
         gsub("/", "-", biocType, fixed = TRUE)
     }
 
+.get_codecov_from_BugReports <- function(bugreports, package) {
+    stopifnot(
+        identical(length(bugreports), length(package))
+    )
+    names(bugreports) <- package
+    Map(
+        function(bugreplink, pkg) {
+            expl <- strsplit(bugreplink, "/")[[1L]]
+            owner <- expl[which(expl == "issues") - 2L]
+            if (is.na(bugreplink))
+                owner <- "Bioconductor"
+            app_url <- paste0(
+                .CODECOV_APP_URL, owner, "/", pkg
+            )
+            .build_codecov_badge(app_url, owner, pkg)
+        },
+        bugreplink = bugreports,
+        pkg = package
+    ) |>
+        as.character()
+}
+
 .build_html_status <- function() {
     builder_url <- paste0(
         "https://bioconductor.org/checkResults/",
