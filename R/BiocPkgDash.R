@@ -44,6 +44,8 @@ BiocPkgDash <- function(...) {
                 bioctypeUI("bioctype1"),
                 emailUI("email1"),
                 hr(),
+                codecovUI("codecov1"),
+                hr(),
                 ghTopicUI("topic1"),
                 hr(),
                 pkgsUI("pkgs1"),
@@ -104,6 +106,7 @@ BiocPkgDash <- function(...) {
         })
         email_data <- emailServer("email1")
         biocver <- biocverServer("biocver1")
+        codecov <- codecovServer("codecov1")
         topic_packages <- ghTopicServer("topic1", biocver = biocver)
         bioctype <- bioctypeServer("bioctype1")
         pkgs <- pkgsServer(
@@ -168,7 +171,8 @@ BiocPkgDash <- function(...) {
 
         clicked_package <- badgesServer(
             "badges1",
-            data = maintainedData
+            data = maintainedData,
+            codecov = codecov
         )
         cardsServer(
             "cards1",

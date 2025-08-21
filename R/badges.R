@@ -1,8 +1,13 @@
-badgesServer <- function(id, data) {
+badgesServer <- function(id, data, codecov) {
     moduleServer(
         id,
         function(input, output, session) {
             output$badge_out <- DT::renderDataTable({
+                    columns_to_hide <-
+                        if (codecov())
+                            list(list(targets = 3, visible = FALSE))
+                        else
+                            list()
                 DT::datatable(
                     badgesDF(
                         data = data()
@@ -11,6 +16,7 @@ badgesServer <- function(id, data) {
                     rownames = FALSE,
                     selection = "single",
                     options = list(
+                        columnDefs = columns_to_hide,
                         dom = "ftp",
                         pageLength = 20,
                         lengthChange = FALSE,
