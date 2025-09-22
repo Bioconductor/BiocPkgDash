@@ -71,7 +71,7 @@
 #'   Annotation packages are not included in the table because they are not
 #'   built regularly by the BBS.
 #'
-#' @param data `tibble()` / `data.frame()` A data frame of maintained packages.
+#' @param data `tibble()` / `data.frame()` A table of maintained packages.
 #'   This is used internally to avoid repeated calls to the
 #'   [BiocPkgTools::biocMaintained()] function.
 #'

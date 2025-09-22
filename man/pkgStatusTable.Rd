@@ -11,7 +11,7 @@ pkgStatusTable(
 )
 }
 \arguments{
-\item{data}{`tibble()` / `data.frame()` A data frame of maintained packages.
+\item{data}{`tibble()` / `data.frame()` A table of maintained packages.
 This is used internally to avoid repeated calls to the
 [BiocPkgTools::biocMaintained()] function.}
 
