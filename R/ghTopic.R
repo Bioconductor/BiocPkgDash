@@ -98,7 +98,7 @@ ghTopicUI <- function(id, label = "topic") {
             inputId = ns("topic"),
             label = "Search packages by GitHub topic:",
             value = "",
-            placeholder = "u24ca289073"
+            placeholder = "e.g., u24ca289073"
         ),
         actionButton(
             inputId = ns("submit_topic"),

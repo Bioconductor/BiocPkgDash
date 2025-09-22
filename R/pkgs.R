@@ -50,7 +50,7 @@ pkgsUI <- function(id, label = "packages") {
             inputId = ns("packages"),
             label = "Enter package names:",
             value = "",
-            placeholder = "BiocGenerics, BiocStyle, BiocBaseUtils, ...",
+            placeholder = "e.g., BiocGenerics, BiocStyle, BiocBaseUtils, ...",
             rows = 4,
             width = "100%"
         ),
