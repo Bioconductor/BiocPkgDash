@@ -34,8 +34,9 @@
 #'
 #' @returns An interactive `ggplotly` object.
 #'
-#' @examples
-#' pkgStatusPlot()
+#' @examplesIf interactive()
+#' data <- BiocPkgTools::biocMaintained("maintainer@bioconductor.org")
+#' pkgStatusPlot(data)
 #' @export
 pkgStatusPlot <- function(
     data = NULL,

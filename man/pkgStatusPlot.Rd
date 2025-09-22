@@ -40,5 +40,8 @@ Note that binary build stages for the Linux builders are not
   (BBS) database.
 }
 \examples{
-pkgStatusPlot()
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+data <- BiocPkgTools::biocMaintained("maintainer@bioconductor.org")
+pkgStatusPlot(data)
+\dontshow{\}) # examplesIf}
 }
