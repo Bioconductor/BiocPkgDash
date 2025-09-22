@@ -88,6 +88,9 @@
 #' @returns A `tibble()` / `data.frame()` with the package build statuses for
 #'   the given `data` input.
 #'
+#' @examplesIf interactive()
+#' data <- BiocPkgTools::biocMaintained("maintainer@bioconductor.org")
+#' pkgStatusTable(data)
 #' @export
 pkgStatusTable <- function(
     data = NULL,

@@ -43,3 +43,9 @@ Note that binary build stages for the Linux builders are marked as
   Annotation packages are not included in the table because they are not
   built regularly by the BBS.
 }
+\examples{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+data <- BiocPkgTools::biocMaintained("maintainer@bioconductor.org")
+pkgStatusTable(data)
+\dontshow{\}) # examplesIf}
+}
