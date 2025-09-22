@@ -1,0 +1,128 @@
+---
+title: "Bioconductor Package Dashboard"
+author: 
+- name: Marcel Ramos
+  affiliation: >
+    CUNY Graduate School of Public Health and Health Policy, New York, NY USA
+output: BiocStyle::html_document
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+vignette: >
+  %\VignetteIndexEntry{shinybiocloader Overview}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+package: BiocPkgDash
+---
+
+# BiocPkgDash
+
+# Introduction
+
+The BiocPkgDash package provides an interactive Shiny application to visualize
+the status of Bioconductor packages. Primarily, users can filter packages by
+maintainer email to display a status badge wall for all packages maintained by
+that email. It allows users to filter packages based on various criteria, such
+as Bioconductor version, package type, and GitHub topics. The dashboard displays
+badges indicating the build status and code coverage for each package. The
+tool is primarily designed for Bioconductor package maintainers to monitor the
+status of their packages.
+
+# Installation
+
+```{r install, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("BiocPkgDash")
+```
+
+# Loading
+
+```{r load,include=TRUE,results="hide",message=FALSE,warning=FALSE}
+library(BiocPkgDash)
+```
+
+# Dashboard display
+
+```{r display,eval=FALSE}
+BiocPkgDash()
+```
+
+```{r mainapp,echo=FALSE}
+knitr::include_graphics("../man/figures/BiocPkgDash.png")
+```
+
+Note that the dashboard and this document is organized by the tab panels.
+Each tab in the dashboard is described in the following sections.
+
+## Filtering packages
+
+One can filter packages by name, Bioconductor version, biocViews package type,
+maintainer email, and GitHub topics. The dashboard will display the status
+badges for all packages that match the selected criteria. Typically, a user
+with use one of the methods to filter for packages. Primarily, the user will
+filter by the relevant maintainer email.
+
+```{r sidebarpanel,echo=FALSE}
+knitr::include_graphics("../man/figures/BiocPkgDash_filter.png")
+```
+
+### GitHub topic filter
+
+The GitHub topic filter allows users to filter packages based on specific
+topics associated with R / Bioconductor packages on GitHub. This can be useful
+for organizations that maintain multiple packages related to a specific
+project, theme, or grant. For example, one can filter for all packages related
+to a particular grant code, e.g., "u24ca289073". Note that repositories will
+have to have the topic added to them for the filter to work.
+
+# Badges
+
+The badge wall displays the build status and code coverage for each package.
+Clicking on a badge will take you to the relevant page for more details.
+
+```{r badgewall,echo=FALSE}
+knitr::include_graphics("../man/figures/BiocPkgDash_badges.png")
+```
+
+Note that the coverage badges can be turned off if the maintainer does not use
+codecov.io for testing package coverage.
+
+## Downloading the badge wall
+
+The dashboard allows users to download the badge wall as a partial HTML file.
+This can be useful for including the badges on personal websites or other
+HTML documentation. The HTML file is generated on the fly by the `shiny` app
+after clicking the `Download HTML` button on the sidebar panel.
+
+# Status
+
+The dashboard also provides a visualization of the package build statuses
+across different stages of the Bioconductor Build System (BBS). This helps
+maintainers quickly identify any issues with their packages.
+
+```{r pkgStatus,echo=FALSE}
+knitr::include_graphics("../man/figures/BiocPkgDash_status.png")
+```
+
+Note that clicking on any of the status bars in the plot takes the user to
+the detailed build report for that specific builder, stage, and status
+combination.
+
+# Dependencies
+
+The `Dependencies` tab displays the package reverse dependencies for a selected
+package. This can help maintainers understand the dependency tree of their
+packages and identify any potential issues.
+
+# Metadata
+
+The `Metadata` tab displays additional information about the selected package(s)
+such as the package title, version, and additional fields from the `DESCRIPTION`
+file as obtained from the internal `biocViews` database. This can help
+maintainers quickly access information about their package(s).
+
+# Session Information
+
+```{r session}
+sessionInfo()
+```
