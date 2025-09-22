@@ -66,7 +66,8 @@ pkgStatusPlot <- function(
     lstage <- sdat[["Stage"]] %in% stage
     lstatus <- sdat[["Status"]] %in% status
     statusPkgs <- sdat[lmain & lstage & lstatus, ]
-    if (!nrow(statusPkgs)) stop("No packages found with maintainer: ", main)
+    if (!nrow(statusPkgs))
+        stop("No packages found with specified maintainer.")
 
     statusPkgs <- dplyr::left_join(
         statusPkgs,

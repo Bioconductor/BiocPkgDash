@@ -20,13 +20,15 @@ filterMaintained <- function(
     )
 ) {
     if (length(cols)) data <- data[, cols]
-    if (!nrow(data)) stop("No packages found")
+    if (!nrow(data))
+        stop("No packages found")
     data[["dependencyCount"]] <- as.integer(data[["dependencyCount"]])
     data
 }
 
 badgesDF <- function(data) {
-    if (missing(data)) stop("'data' argument is required")
+    if (missing(data))
+        stop("'data' argument is required")
     version <- attr(data, "version")
     pkgTypes <- .get_pkgTypes_from_URL(data[["Package"]], version)
     versions <- c("release", "devel")

@@ -121,7 +121,8 @@ pkgStatusTable <- function(
     lstage <- sdat[["Stage"]] %in% stage
     lstatus <- sdat[["Status"]] %in% status
     statusPkgs <- sdat[lmain & lstage & lstatus, ]
-    if (!length(statusPkgs)) stop("No packages found with maintainer: ", main)
+    if (!length(statusPkgs))
+        stop("No packages found with specified maintainer.")
 
     statusPkgs[["Stage"]] <- factor(
         statusPkgs[["Stage"]],
