@@ -32,6 +32,8 @@
 #' @importFrom tidyr complete
 #' @importFrom plotly ggplotly
 #'
+#' @returns An interactive `ggplotly` object.
+#'
 #' @examples
 #' pkgStatusPlot()
 #' @export

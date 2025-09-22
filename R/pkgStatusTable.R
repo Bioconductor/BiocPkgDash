@@ -85,6 +85,9 @@
 #'   [BiocPkgTools::biocBuildReport()]. The default is all stages:
 #'   `c("install", "buildsrc", "checksrc", "buildbin")`.
 #'
+#' @returns A `tibble()` / `data.frame()` with the package build statuses for
+#'   the given `data` input.
+#'
 #' @export
 pkgStatusTable <- function(
     data = NULL,

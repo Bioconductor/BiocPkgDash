@@ -25,6 +25,9 @@ stages to include in the plot. These values are obtained from the `stage`
 `BiocPkgTools::biocBuildReport()`. The default is all stages:
 `c("install", "buildsrc", "checksrc", "buildbin")`.}
 }
+\value{
+An interactive `ggplotly` object.
+}
 \description{
 This function generates a stacked bar plot of package statuses for
 a given Bioconductor version and email combination. It is mainly used
