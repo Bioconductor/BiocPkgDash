@@ -35,7 +35,9 @@
 #' @returns An interactive `ggplotly` object.
 #'
 #' @examplesIf interactive()
-#' data <- BiocPkgTools::biocMaintained("maintainer@bioconductor.org")
+#' data <- BiocPkgTools::biocMaintained(
+#'     "maintainer@bioconductor.org", pkgType = "software"
+#' )
 #' pkgStatusPlot(data)
 #' @export
 pkgStatusPlot <- function(

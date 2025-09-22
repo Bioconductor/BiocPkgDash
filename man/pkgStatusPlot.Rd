@@ -41,7 +41,9 @@ Note that binary build stages for the Linux builders are not
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
-data <- BiocPkgTools::biocMaintained("maintainer@bioconductor.org")
+data <- BiocPkgTools::biocMaintained(
+    "maintainer@bioconductor.org", pkgType = "software"
+)
 pkgStatusPlot(data)
 \dontshow{\}) # examplesIf}
 }
