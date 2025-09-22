@@ -181,7 +181,7 @@ BiocPkgDash <- function(...) {
 
         downloadServer(
             "download1",
-            email = email,
+            email = email_data$email,
             data = maintainedData
         )
         depReportServer(
