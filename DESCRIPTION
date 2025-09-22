@@ -11,7 +11,7 @@ Authors@R: c(
   )
 Description: The package interactively renders an HTML table of packages
   associated with the given emails.
-Depends: R (>= 4.1.0), shiny
+Depends: R (>= 4.5.0), shiny
 Imports:
   BiocBaseUtils,
   BiocPkgTools (>= 1.27.6),
