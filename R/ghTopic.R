@@ -85,7 +85,7 @@ ghTopicServer <- function(id, biocver) {
         token = token
     )
     repos <- vapply(results$items, `[[`, character(1L), "name")
-    pkgsdb <- available.packages(
+    pkgsdb <- utils::available.packages(
         repos = BiocManager:::.repositories_bioc(version = version)
     )
     repos[repos %in% rownames(pkgsdb)]

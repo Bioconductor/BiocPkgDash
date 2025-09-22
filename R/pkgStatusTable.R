@@ -1,7 +1,7 @@
 .get_pkgTypes_from_URL <-
     function(packages, version) {
         repos <- BiocManager:::.repositories_bioc(version)
-        pkgsdb <- available.packages(repos = repos)
+        pkgsdb <- utils::available.packages(repos = repos)
         repo_urls <- pkgsdb[rownames(pkgsdb) %in% packages, "Repository"]
         tail_urls <- vapply(
             strsplit(repo_urls, paste0(version, "/")),
