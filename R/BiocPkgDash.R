@@ -125,7 +125,7 @@ BiocPkgDash <- function(...) {
                         {
                             if (length(pkgs()) || length(topic_packages())) {
                                 packages <- c(pkgs(), topic_packages())
-                                BiocPkgDash:::BiocPkgList(
+                                BiocPkgList(
                                     packages = packages,
                                     version = biocver()
                                 )

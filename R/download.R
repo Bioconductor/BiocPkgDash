@@ -9,7 +9,7 @@ downloadServer <- function(id, email, data) {
                     paste0("pkgdash_", em, ".html")
                 },
                 content = function(file) {
-                    BiocPkgDash:::renderHTMLfrag(
+                    renderHTMLfrag(
                         file = file,
                         data = data()
                     )

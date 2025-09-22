@@ -4,7 +4,7 @@ metadataServer <- function(id, data) {
         function(input, output, session) {
             output$metadata_out <- DT::renderDataTable({
                 DT::datatable(
-                    BiocPkgDash:::filterMaintained(
+                    filterMaintained(
                         data = data()
                     ),
                     rownames = FALSE,
