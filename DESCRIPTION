@@ -21,6 +21,8 @@ Imports:
   dplyr,
   DT,
   ggplot2,
+  gh,
+  htmlwidgets,
   plotly,
   rmarkdown,
   shinybiocloader,
