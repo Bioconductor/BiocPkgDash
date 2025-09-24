@@ -2,7 +2,9 @@
     function(packages, version) {
         repos <- BiocManager:::.repositories_bioc(version)
         pkgsdb <- utils::available.packages(repos = repos)
-        repo_urls <- pkgsdb[rownames(pkgsdb) %in% packages, "Repository"]
+        pkgTypes <- structure(rep("bioc", length(packages)), names = packages)
+        pkgs_in_db <- rownames(pkgsdb) %in% packages
+        repo_urls <- pkgsdb[pkgs_in_db, "Repository"]
         tail_urls <- vapply(
             strsplit(repo_urls, paste0(version, "/")),
             "[",
@@ -10,14 +12,17 @@
             2L
         )
         biocType <- gsub("/src/contrib", "", tail_urls)
+        pkgTypes[names(biocType)] <- gsub("/", "-", biocType, fixed = TRUE)
+
         pkgsnot <- !packages %in% names(biocType)
         npkgs <- paste(packages[pkgsnot], collapse = ", ")
         if (any(pkgsnot))
             warning(
                 "Bioconductor package category not found for: ",
-                npkgs
+                npkgs,
+                call. = FALSE
             )
-        gsub("/", "-", biocType, fixed = TRUE)
+        pkgTypes
     }
 
 .get_codecov_from_BugReports <- function(bugreports, package) {
