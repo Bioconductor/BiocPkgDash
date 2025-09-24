@@ -33,7 +33,8 @@ Imports:
 Suggests:
   BiocStyle,
   knitr,
-  sessioninfo
+  sessioninfo,
+  tinytest
 biocViews: Software, Infrastructure, Visualization, GUI
 VignetteBuilder: knitr
 License: Artistic-2.0
