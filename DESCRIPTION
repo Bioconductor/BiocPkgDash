@@ -31,9 +31,9 @@ Imports:
   utils,
   whisker
 Suggests:
-  sessioninfo
   BiocStyle,
   knitr,
+  sessioninfo
 biocViews: Software, Infrastructure, Visualization, GUI
 VignetteBuilder: knitr
 License: Artistic-2.0
