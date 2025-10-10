@@ -19,7 +19,13 @@ emailServer <- function(id) {
                 input$submit_email,
                 {
                     emailValue(input$email)
-                }
+                    updateQueryString(
+                        queryString = paste0("?email=", input$email),
+                        mode = "replace",
+                        session = session
+                    )
+                },
+                priority = 1
             )
             return(
                 list(
