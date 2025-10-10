@@ -135,8 +135,10 @@ renderHTMLfrag <- function(file, data = NULL) {
         "{{#packages}}",
         paste0(
             "| [{{{package}}}]({{{pkgurl}}}) |",
-            " [![Bioconductor-release Build Status]({{{rshield}}})]({{{rresult}}}) |",
-            " [![Bioconductor-devel Build Status]({{{dshield}}})]({{{dresult}}}) |"
+            " [![Bioconductor-release Build Status]({{{rshield}}})]",
+            "({{{rresult}}}) |",
+            " [![Bioconductor-devel Build Status]({{{dshield}}})]",
+            "({{{dresult}}}) |"
         ),
         "{{/packages}}"
     )
