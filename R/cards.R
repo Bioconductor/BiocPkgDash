@@ -10,9 +10,7 @@ cardsServer <- function(id, data) {
                 all_dls <- vapply(
                     data()[["Package"]],
                     function(pkg) {
-                        dl_pkg <- suppressWarnings({
-                            BiocPkgTools::pkgDownloadStats(pkg)
-                        })
+                        dl_pkg <- BiocPkgTools::pkgDownloadStats(pkg)
                         dls <- sum(dl_pkg[["Nb_of_distinct_IPs"]])
                         if (!length(dls)) 0 else dls
                     },
