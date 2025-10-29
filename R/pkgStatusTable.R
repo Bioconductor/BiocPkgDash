@@ -1,7 +1,7 @@
 #' @importFrom biocapi biocpkgtype
 .get_pkgTypes_from_API <-
     function(packages, version) {
-        pkgTypes <- biocpkgstypes(pkg = packages, version = version)
+        pkgTypes <- biocpkgstypes(pkgs = packages, version = version)
         naornull <- is.na(pkgTypes) | is.null(pkgTypes)
         if (any(naornull)) {
             warning(
