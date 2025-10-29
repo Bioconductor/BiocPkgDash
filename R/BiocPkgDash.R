@@ -13,7 +13,6 @@
 #' By default, the package will look for the email in the URL query.
 #' @param ... Additional parameters to pass to the `shinyApp()` function.
 #'
-#' @importFrom BiocPkgTools biocMaintained
 #' @import shiny
 #'
 #' @return called for the side effect of initializing a shiny app
@@ -184,7 +183,8 @@ BiocPkgDash <- function(email = NULL, ...) {
                                     version = biocver()
                                 )
                             } else {
-                                BiocPkgTools::biocMaintained(
+                                req(email_data$email(), biocver(), bioctype())
+                                biocapi::maintainerPkgs(
                                     main = email_data$email(),
                                     version = biocver(),
                                     pkgType = bioctype()
