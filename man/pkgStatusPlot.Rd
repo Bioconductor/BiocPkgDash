@@ -5,25 +5,29 @@
 \title{A Summary Plot for Package Statuses}
 \usage{
 pkgStatusPlot(
-  data = NULL,
+  main,
   status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
-  stage = c("install", "buildsrc", "checksrc", "buildbin")
+  stage = c("install", "buildsrc", "checksrc", "buildbin"),
+  data = NULL
 )
 }
 \arguments{
-\item{data}{`tibble()` / `data.frame()` A data frame of maintained packages.
-This is used internally to avoid repeated calls to the
-[BiocPkgTools::biocMaintained()] function.}
+\item{main}{`character(1)` The email address of the maintainer whose packages
+will be included in the table.}
 
-\item{status}{`character()` A vector of `INSTALL`, `build` and `check`
-statuses to include in the plot. These values are obtained from the
-`result` column in `BiocPkgTools::biocBuildReport()`. The default is all:
+\item{status}{`character()` The status of the builders to include in the
+function. These values are obtained from the `result` column in
+[biocapi::buildreport()]. The default is all:
 `c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped")`.}
 
-\item{stage}{`character()` A vector of the Bioconductor Build System (BBS)
-stages to include in the plot. These values are obtained from the `stage`
-`BiocPkgTools::biocBuildReport()`. The default is all stages:
+\item{stage}{`character()` vector of the Bioconductor Build System (BBS)
+stages to include. These values are obtained from the `stage`
+[biocapi::buildreport()]. The default is all stages:
 `c("install", "buildsrc", "checksrc", "buildbin")`.}
+
+\item{data}{`tibble()` / `data.frame()` of maintained packages. This is used
+internally to avoid repeated calls to the [biocapi::maintainerPkgs()]
+function.}
 }
 \value{
 An interactive `ggplotly` object.
@@ -41,9 +45,9 @@ Note that binary build stages for the Linux builders are not
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
-data <- BiocPkgTools::biocMaintained(
-    "maintainer@bioconductor.org", pkgType = "software"
+data <- biocapi::maintainerPkgs(
+    main = "maintainer@bioconductor.org"
 )
-pkgStatusPlot(data)
+pkgStatusPlot(data = data)
 \dontshow{\}) # examplesIf}
 }

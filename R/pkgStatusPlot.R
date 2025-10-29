@@ -11,21 +11,9 @@
 #'   Actions and their result are not included in the Bioconductor Build System
 #'   (BBS) database.
 #'
-#' @param data `tibble()` / `data.frame()` A data frame of maintained packages.
-#'   This is used internally to avoid repeated calls to the
-#'   [BiocPkgTools::biocMaintained()] function.
+#' @inheritParams pkgStatusTable
 #'
-#' @param status `character()` A vector of `INSTALL`, `build` and `check`
-#'   statuses to include in the plot. These values are obtained from the
-#'   `result` column in `BiocPkgTools::biocBuildReport()`. The default is all:
-#'   `c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped")`.
-#'
-#' @param stage `character()` A vector of the Bioconductor Build System (BBS)
-#'   stages to include in the plot. These values are obtained from the `stage`
-#'   `BiocPkgTools::biocBuildReport()`. The default is all stages:
-#'   `c("install", "buildsrc", "checksrc", "buildbin")`.
-#'
-#' @importFrom BiocPkgTools biocMaintained
+#' @importFrom biocapi buildstatus maintainerPkgs
 #' @importFrom ggplot2 ggplot aes geom_col facet_grid coord_flip
 #'   scale_fill_manual ggtitle theme element_blank
 #' @importFrom dplyr full_join mutate count .data
@@ -35,22 +23,28 @@
 #' @returns An interactive `ggplotly` object.
 #'
 #' @examplesIf interactive()
-#' data <- BiocPkgTools::biocMaintained(
-#'     "maintainer@bioconductor.org", pkgType = "software"
+#' data <- biocapi::maintainerPkgs(
+#'     main = "maintainer@bioconductor.org"
 #' )
-#' pkgStatusPlot(data)
+#' pkgStatusPlot(data = data)
 #' @export
 pkgStatusPlot <- function(
-    data = NULL,
+    main,
     status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
-    stage = c("install", "buildsrc", "checksrc", "buildbin")
+    stage = c("install", "buildsrc", "checksrc", "buildbin"),
+    data = NULL
 ) {
-    if (missing(data))
-        stop("Argument 'data' from 'biocMaintained()' is required.")
+    if (!is.null(data))
+        main <- attr(data, "maintainer")
+    else if (missing(main) && is.null(data))
+        stop("Argument 'main' or 'data' is required.")
+
+    if (is.null(data))
+        data <- biocapi::maintainerPkgs(main = main)
+
     status <- match.arg(status, several.ok = TRUE)
     stage <- match.arg(stage, several.ok = TRUE)
 
-    pkgType <- attr(data, "pkgType")
     version <- attr(data, "version")
 
     pkg_type_map <- tibble::tibble(
@@ -58,11 +52,8 @@ pkgStatusPlot <- function(
         PkgType = .get_pkgTypes_from_URL(data[["Package"]], version)
     )
 
-    sdat <-
-        BiocPkgTools::biocBuildStatusDB(
-            version = version,
-            pkgType = pkgType
-        )
+    sdat <- biocapi::buildstatus(main = main)
+
     names(sdat) <- c("Package", "Hostname", "Stage", "Status")
 
     lmain <- sdat[["Package"]] %in% data[["Package"]]

@@ -8,7 +8,7 @@ pkgStatusTable(
   main,
   status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
   stage = c("install", "buildsrc", "checksrc", "buildbin"),
-  data
+  data = NULL
 )
 }
 \arguments{
@@ -16,18 +16,18 @@ pkgStatusTable(
 will be included in the table.}
 
 \item{status}{`character()` The status of the builders to include in the
-table. These values are obtained from the `result` column in
-[BiocPkgTools::biocBuildReport()]. The default is all:
+function. These values are obtained from the `result` column in
+[biocapi::buildreport()]. The default is all:
 `c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped")`.}
 
-\item{stage}{`character()` A vector of the Bioconductor Build System (BBS)
-stages to include in the plot. These values are obtained from the `stage`
-[BiocPkgTools::biocBuildReport()]. The default is all stages:
+\item{stage}{`character()` vector of the Bioconductor Build System (BBS)
+stages to include. These values are obtained from the `stage`
+[biocapi::buildreport()]. The default is all stages:
 `c("install", "buildsrc", "checksrc", "buildbin")`.}
 
-\item{data}{`tibble()` / `data.frame()` A table of maintained packages.
-This is used internally to avoid repeated calls to the
-[BiocPkgTools::biocMaintained()] function.}
+\item{data}{`tibble()` / `data.frame()` of maintained packages. This is used
+internally to avoid repeated calls to the [biocapi::maintainerPkgs()]
+function.}
 }
 \value{
 A `tibble()` / `data.frame()` with the package build statuses for
@@ -49,7 +49,9 @@ Note that binary build stages for the Linux builders are marked as
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
-data <- biocapi::maintainerPkgs(main = "maintainer@bioconductor.org")
-pkgStatusTable(main = "maintainer@bioconductor.org")
+data <- biocapi::maintainerPkgs(
+    main = "maintainer@bioconductor.org"
+)
+pkgStatusTable(data = data)
 \dontshow{\}) # examplesIf}
 }

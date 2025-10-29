@@ -79,18 +79,18 @@
 #'   will be included in the table.
 #'
 #' @param status `character()` The status of the builders to include in the
-#'   table. These values are obtained from the `result` column in
-#'   [BiocPkgTools::biocBuildReport()]. The default is all:
+#'   function. These values are obtained from the `result` column in
+#'   [biocapi::buildreport()]. The default is all:
 #'   `c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped")`.
 #'
-#' @param stage `character()` A vector of the Bioconductor Build System (BBS)
-#'   stages to include in the plot. These values are obtained from the `stage`
-#'   [BiocPkgTools::biocBuildReport()]. The default is all stages:
+#' @param stage `character()` vector of the Bioconductor Build System (BBS)
+#'   stages to include. These values are obtained from the `stage`
+#'   [biocapi::buildreport()]. The default is all stages:
 #'   `c("install", "buildsrc", "checksrc", "buildbin")`.
 #'
-#' @param data `tibble()` / `data.frame()` A table of maintained packages.
-#'   This is used internally to avoid repeated calls to the
-#'   [BiocPkgTools::biocMaintained()] function.
+#' @param data `tibble()` / `data.frame()` of maintained packages. This is used
+#'   internally to avoid repeated calls to the [biocapi::maintainerPkgs()]
+#'   function.
 #'
 #' @returns A `tibble()` / `data.frame()` with the package build statuses for
 #'   the given `data` input.
@@ -98,8 +98,10 @@
 #' @importFrom biocapi buildstatus maintainerPkgs
 #'
 #' @examplesIf interactive()
-#' data <- biocapi::maintainerPkgs(main = "maintainer@bioconductor.org")
-#' pkgStatusTable(main = "maintainer@bioconductor.org")
+#' data <- biocapi::maintainerPkgs(
+#'     main = "maintainer@bioconductor.org"
+#' )
+#' pkgStatusTable(data = data)
 #' @export
 pkgStatusTable <- function(
     main,
@@ -107,9 +109,12 @@ pkgStatusTable <- function(
     stage = c("install", "buildsrc", "checksrc", "buildbin"),
     data = NULL
 ) {
-    if (missing(main) && is.null(data))
-        stop("Argument 'main' is required.")
-    else if (is.null(data))
+    if (!is.null(data))
+        main <- attr(data, "maintainer")
+    else if (missing(main) && is.null(data))
+        stop("Argument 'main' or 'data' is required.")
+
+    if (is.null(data))
         data <- biocapi::maintainerPkgs(main = main)
 
     status <- match.arg(status, several.ok = TRUE)
