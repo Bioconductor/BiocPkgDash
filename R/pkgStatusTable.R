@@ -1,16 +1,26 @@
-#' @importFrom biocapi biocpkgtype
-.get_pkgTypes_from_API <-
+.get_pkgTypes_from_URL <-
     function(packages, version) {
-        pkgTypes <- biocpkgstypes(pkgs = packages, version = version)
-        naornull <- is.na(pkgTypes) | is.null(pkgTypes)
-        if (any(naornull)) {
+        repos <- BiocManager:::.repositories_bioc(version)
+        pkgsdb <- utils::available.packages(repos = repos)
+        pkgTypes <- structure(rep("bioc", length(packages)), names = packages)
+        pkgs_in_db <- rownames(pkgsdb) %in% packages
+        repo_urls <- pkgsdb[pkgs_in_db, "Repository"]
+        tail_urls <- vapply(
+            strsplit(repo_urls, paste0(version, "/")),
+            "[",
+            character(1L),
+            2L
+        )
+        biocType <- gsub("/src/contrib", "", tail_urls)
+        pkgTypes[names(biocType)] <- gsub("/", "-", biocType, fixed = TRUE)
+        pkgsnot <- !packages %in% names(biocType)
+        npkgs <- paste(packages[pkgsnot], collapse = ", ")
+        if (any(pkgsnot))
             warning(
                 "Bioconductor package category not found for: ",
-                paste(packages[naornull], collapse = ", "),
+                npkgs,
                 call. = FALSE
             )
-            pkgTypes[naornull] <- "bioc"
-        }
         pkgTypes
     }
 
@@ -65,9 +75,8 @@
 #'   Annotation packages are not included in the table because they are not
 #'   built regularly by the BBS.
 #'
-#' @param data `tibble()` / `data.frame()` A table of maintained packages.
-#'   This is used internally to avoid repeated calls to the
-#'   [BiocPkgTools::biocMaintained()] function.
+#' @param main `character(1)` The email address of the maintainer whose packages
+#'   will be included in the table.
 #'
 #' @param status `character()` The status of the builders to include in the
 #'   table. These values are obtained from the `result` column in
@@ -79,36 +88,40 @@
 #'   [BiocPkgTools::biocBuildReport()]. The default is all stages:
 #'   `c("install", "buildsrc", "checksrc", "buildbin")`.
 #'
+#' @param data `tibble()` / `data.frame()` A table of maintained packages.
+#'   This is used internally to avoid repeated calls to the
+#'   [BiocPkgTools::biocMaintained()] function.
+#'
 #' @returns A `tibble()` / `data.frame()` with the package build statuses for
 #'   the given `data` input.
 #'
+#' @importFrom biocapi buildstatus maintainerPkgs
+#'
 #' @examplesIf interactive()
-#' data <- BiocPkgTools::biocMaintained("maintainer@bioconductor.org")
-#' pkgStatusTable(data)
+#' data <- biocapi::maintainerPkgs(main = "maintainer@bioconductor.org")
+#' pkgStatusTable(main = "maintainer@bioconductor.org")
 #' @export
 pkgStatusTable <- function(
-    data = NULL,
+    main,
     status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
-    stage = c("install", "buildsrc", "checksrc", "buildbin")
+    stage = c("install", "buildsrc", "checksrc", "buildbin"),
+    data = NULL
 ) {
-    if (missing(data))
-        stop("Argument 'data' from 'biocMaintained()' is required.")
+    if (missing(main) && is.null(data))
+        stop("Argument 'main' is required.")
+    else if (is.null(data))
+        data <- biocapi::maintainerPkgs(main = main)
 
     status <- match.arg(status, several.ok = TRUE)
     stage <- match.arg(stage, several.ok = TRUE)
 
-    pkgType <- attr(data, "pkgType")
     version <- attr(data, "version")
 
+    biocTypes <- .get_pkgTypes_from_URL(data[["Package"]], version)
     ## adjust for missing package types
     data <- data[match(names(biocTypes), data[["Package"]]), ]
     data <- dplyr::bind_cols(data, pkgType = biocTypes)
-    sdat <-
-        BiocPkgTools::biocBuildStatusDB(
-            version = version,
-            pkgType = pkgType
-        )
-    biocTypes <- .get_pkgTypes_from_API(data[["Package"]], version)
+    sdat <- biocapi::buildstatus(main = main)
     names(sdat) <- c("Package", "Hostname", "Stage", "Status")
 
     lmain <- sdat[["Package"]] %in% data[["Package"]]

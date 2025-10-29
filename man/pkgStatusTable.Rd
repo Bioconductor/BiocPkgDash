@@ -5,15 +5,15 @@
 \title{Build a table of package build statuses}
 \usage{
 pkgStatusTable(
-  data = NULL,
+  main,
   status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
-  stage = c("install", "buildsrc", "checksrc", "buildbin")
+  stage = c("install", "buildsrc", "checksrc", "buildbin"),
+  data
 )
 }
 \arguments{
-\item{data}{`tibble()` / `data.frame()` A table of maintained packages.
-This is used internally to avoid repeated calls to the
-[BiocPkgTools::biocMaintained()] function.}
+\item{main}{`character(1)` The email address of the maintainer whose packages
+will be included in the table.}
 
 \item{status}{`character()` The status of the builders to include in the
 table. These values are obtained from the `result` column in
@@ -24,6 +24,10 @@ table. These values are obtained from the `result` column in
 stages to include in the plot. These values are obtained from the `stage`
 [BiocPkgTools::biocBuildReport()]. The default is all stages:
 `c("install", "buildsrc", "checksrc", "buildbin")`.}
+
+\item{data}{`tibble()` / `data.frame()` A table of maintained packages.
+This is used internally to avoid repeated calls to the
+[BiocPkgTools::biocMaintained()] function.}
 }
 \value{
 A `tibble()` / `data.frame()` with the package build statuses for
@@ -45,7 +49,7 @@ Note that binary build stages for the Linux builders are marked as
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
-data <- BiocPkgTools::biocMaintained("maintainer@bioconductor.org")
-pkgStatusTable(data)
+data <- biocapi::maintainerPkgs(main = "maintainer@bioconductor.org")
+pkgStatusTable(main = "maintainer@bioconductor.org")
 \dontshow{\}) # examplesIf}
 }
