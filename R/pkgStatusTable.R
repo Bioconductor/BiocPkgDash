@@ -1,27 +1,16 @@
-.get_pkgTypes_from_URL <-
+#' @importFrom biocapi biocpkgtype
+.get_pkgTypes_from_API <-
     function(packages, version) {
-        repos <- BiocManager:::.repositories_bioc(version)
-        pkgsdb <- utils::available.packages(repos = repos)
-        pkgTypes <- structure(rep("bioc", length(packages)), names = packages)
-        pkgs_in_db <- rownames(pkgsdb) %in% packages
-        repo_urls <- pkgsdb[pkgs_in_db, "Repository"]
-        tail_urls <- vapply(
-            strsplit(repo_urls, paste0(version, "/")),
-            "[",
-            character(1L),
-            2L
-        )
-        biocType <- gsub("/src/contrib", "", tail_urls)
-        pkgTypes[names(biocType)] <- gsub("/", "-", biocType, fixed = TRUE)
-
-        pkgsnot <- !packages %in% names(biocType)
-        npkgs <- paste(packages[pkgsnot], collapse = ", ")
-        if (any(pkgsnot))
+        pkgTypes <- biocpkgstypes(pkg = packages, version = version)
+        naornull <- is.na(pkgTypes) | is.null(pkgTypes)
+        if (any(naornull)) {
             warning(
                 "Bioconductor package category not found for: ",
-                npkgs,
+                paste(packages[naornull], collapse = ", "),
                 call. = FALSE
             )
+            pkgTypes[naornull] <- "bioc"
+        }
         pkgTypes
     }
 
@@ -111,7 +100,6 @@ pkgStatusTable <- function(
     pkgType <- attr(data, "pkgType")
     version <- attr(data, "version")
 
-    biocTypes <- .get_pkgTypes_from_URL(data[["Package"]], version)
     ## adjust for missing package types
     data <- data[match(names(biocTypes), data[["Package"]]), ]
     data <- dplyr::bind_cols(data, pkgType = biocTypes)
@@ -120,6 +108,7 @@ pkgStatusTable <- function(
             version = version,
             pkgType = pkgType
         )
+    biocTypes <- .get_pkgTypes_from_API(data[["Package"]], version)
     names(sdat) <- c("Package", "Hostname", "Stage", "Status")
 
     lmain <- sdat[["Package"]] %in% data[["Package"]]
