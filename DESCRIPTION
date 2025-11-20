@@ -1,7 +1,7 @@
 Package: BiocPkgDash
 Type: Package
 Title: An interactive Shiny dashboard for Bioconductor package maintainers
-Version: 0.99.37
+Version: 0.99.38
 Authors@R: c(
   person(
     "Marcel", "Ramos", , "marcel.ramos@sph.cuny.edu", c("aut", "cre"),
