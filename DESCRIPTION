@@ -16,6 +16,7 @@ Imports:
   BiocBaseUtils,
   BiocPkgTools (>= 1.27.6),
   BiocManager,
+  biocapi,
   bsicons,
   bslib,
   dplyr,
