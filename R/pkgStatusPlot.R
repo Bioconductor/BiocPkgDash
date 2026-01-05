@@ -47,11 +47,6 @@ pkgStatusPlot <- function(
 
     version <- attr(data, "version")
 
-    pkg_type_map <- tibble::tibble(
-        Package = data[["Package"]],
-        PkgType = .get_pkgTypes_from_URL(data[["Package"]], version)
-    )
-
     sdat <- biocapi::buildstatus(main = main)
     sdat <- dplyr::rename(
         sdat,
@@ -68,11 +63,6 @@ pkgStatusPlot <- function(
     if (!nrow(statusPkgs))
         stop("No packages found with specified maintainer.")
 
-    statusPkgs <- dplyr::left_join(
-        statusPkgs,
-        pkg_type_map,
-        by = "Package"
-    )
     statusPkgs[["Stage"]] <- factor(
         statusPkgs[["Stage"]],
         levels = c("install", "buildsrc", "checksrc", "buildbin"),
