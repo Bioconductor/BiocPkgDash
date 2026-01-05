@@ -53,8 +53,13 @@ pkgStatusPlot <- function(
     )
 
     sdat <- biocapi::buildstatus(main = main)
-
-    names(sdat) <- c("Package", "Hostname", "Stage", "Status")
+    sdat <- dplyr::rename(
+        sdat,
+        Hostname = .data[["node"]],
+        Stage = .data[["stage"]],
+        Status = .data[["result"]],
+        PkgType = .data[["pkgType"]]
+    )
 
     lmain <- sdat[["Package"]] %in% data[["Package"]]
     lstage <- sdat[["Stage"]] %in% stage
