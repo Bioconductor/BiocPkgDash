@@ -32,22 +32,32 @@ pkgStatusPlot <- function(
     main,
     status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
     stage = c("install", "buildsrc", "checksrc", "buildbin"),
+    version = BiocManager::version(),
+    pkgType = c("software", "data-experiment", "data-annotation", "workflows"),
     data = NULL
 ) {
+    if (missing(pkgType))
+        pkgType <- "software"
+    else
+        pkgType <- match.arg(pkgType, several.ok = TRUE)
+
+    status <- match.arg(status, several.ok = TRUE)
+    stage <- match.arg(stage, several.ok = TRUE)
+
     if (!is.null(data))
         main <- attr(data, "maintainer")
     else if (missing(main) && is.null(data))
         stop("Argument 'main' or 'data' is required.")
 
     if (is.null(data))
-        data <- biocapi::maintainerPkgs(main = main)
+        data <- biocapi::maintainerPkgs(
+            main = main, version = version, pkgType = pkgType
+        )
 
-    status <- match.arg(status, several.ok = TRUE)
-    stage <- match.arg(stage, several.ok = TRUE)
+    sdat <- biocapi::buildstatus(
+        main = main, version = version, pkgType = pkgType
+    )
 
-    version <- attr(data, "version")
-
-    sdat <- biocapi::buildstatus(main = main)
     sdat <- dplyr::rename(
         sdat,
         Hostname = .data[["node"]],

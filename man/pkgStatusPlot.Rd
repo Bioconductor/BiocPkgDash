@@ -8,6 +8,8 @@ pkgStatusPlot(
   main,
   status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
   stage = c("install", "buildsrc", "checksrc", "buildbin"),
+  version = BiocManager::version(),
+  pkgType = c("software", "data-experiment", "data-annotation", "workflows"),
   data = NULL
 )
 }
