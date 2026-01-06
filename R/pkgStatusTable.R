@@ -5,6 +5,7 @@
         pkgTypes <- structure(rep("bioc", length(packages)), names = packages)
         pkgs_in_db <- rownames(pkgsdb) %in% packages
         repo_urls <- pkgsdb[pkgs_in_db, "Repository"]
+        names(repo_urls) <- rownames(pkgsdb)[pkgs_in_db]
         tail_urls <- vapply(
             strsplit(repo_urls, paste0(version, "/")),
             "[",
