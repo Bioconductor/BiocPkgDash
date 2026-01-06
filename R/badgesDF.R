@@ -30,10 +30,13 @@ badgesDF <- function(data) {
     if (missing(data))
         stop("'data' argument is required")
     version <- attr(data, "version")
-    pkgTypes <- .get_pkgTypes_from_URL(data[["Package"]], version)
+    pkgTypes <- data[["pkgType"]]
+    if (is.null(data[["Package"]]))
+        data <- dplyr::rename(data, Package = .data[["pkg"]])
+    names(pkgTypes) <- data[["Package"]]
     versions <- c("release", "devel")
     codecov <- .get_codecov_from_BugReports(
-        data[["BugReports"]], data[["pkg"]]
+        data[["BugReports"]], data[["Package"]]
     )
 
     templates <- c(
