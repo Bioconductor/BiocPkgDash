@@ -14,8 +14,8 @@ pkgStatusPlot(
 )
 }
 \arguments{
-\item{main}{`character(1)` The email address of the maintainer whose packages
-will be included in the table.}
+\item{main}{\code{character(1)} A regex string to search for in the \code{Author} and
+\code{Maintainer} fields in the \code{VIEWS} data}
 
 \item{status}{`character()` The status of the builders to include in the
 function. These values are obtained from the `result` column in
@@ -26,6 +26,14 @@ function. These values are obtained from the `result` column in
 stages to include. These values are obtained from the `stage`
 [biocapi::buildreport()]. The default is all stages:
 `c("install", "buildsrc", "checksrc", "buildbin")`.}
+
+\item{version}{\code{package_version} The Bioconductor version to use for
+\code{biocMaintained} function corresponding to the list of packages associated
+with the given maintainer.}
+
+\item{pkgType}{\code{character()} Any of "software", "data-experiment",
+"data-annotation", or "workflows" indicating the type of Bioconductor
+packages filter by.}
 
 \item{data}{`tibble()` / `data.frame()` of maintained packages. This is used
 internally to avoid repeated calls to the [biocapi::maintainerPkgs()]

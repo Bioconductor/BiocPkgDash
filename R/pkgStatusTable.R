@@ -75,8 +75,7 @@
 #'   Annotation packages are not included in the table because they are not
 #'   built regularly by the BBS.
 #'
-#' @param main `character(1)` The email address of the maintainer whose packages
-#'   will be included in the table.
+#' @inheritParams biocapi::maintainerPkgs
 #'
 #' @param status `character()` The status of the builders to include in the
 #'   function. These values are obtained from the `result` column in
@@ -107,27 +106,36 @@ pkgStatusTable <- function(
     main,
     status = c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped"),
     stage = c("install", "buildsrc", "checksrc", "buildbin"),
+    version = BiocManager::version(),
+    pkgType = c("software", "data-experiment", "data-annotation", "workflows"),
     data = NULL
 ) {
+    if (missing(pkgType))
+        pkgType <- "software"
+    else
+        pkgType <- match.arg(pkgType, several.ok = TRUE)
+
+    status <- match.arg(status, several.ok = TRUE)
+    stage <- match.arg(stage, several.ok = TRUE)
+
     if (!is.null(data))
         main <- attr(data, "maintainer")
     else if (missing(main) && is.null(data))
         stop("Argument 'main' or 'data' is required.")
 
     if (is.null(data))
-        data <- biocapi::maintainerPkgs(main = main)
+        data <- biocapi::maintainerPkgs(
+            main = main, version = version, pkgType = pkgType
+        )
 
-    status <- match.arg(status, several.ok = TRUE)
-    stage <- match.arg(stage, several.ok = TRUE)
-
-    version <- attr(data, "version")
-
-    biocTypes <- .get_pkgTypes_from_URL(data[["Package"]], version)
-    ## adjust for missing package types
-    data <- data[match(names(biocTypes), data[["Package"]]), ]
-    data <- dplyr::bind_cols(data, pkgType = biocTypes)
-    sdat <- biocapi::buildstatus(main = main)
-    names(sdat) <- c("Package", "Hostname", "Stage", "Status")
+    sdat <- biocapi::buildstatus(
+        main = main, version = version, pkgType = pkgType
+    ) |>
+        dplyr::rename(
+            Hostname = .data[["node"]],
+            Stage = .data[["stage"]],
+            Status = .data[["result"]]
+        )
 
     lmain <- sdat[["Package"]] %in% data[["Package"]]
     lstage <- sdat[["Stage"]] %in% stage
