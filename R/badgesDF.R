@@ -33,7 +33,7 @@ badgesDF <- function(data) {
     pkgTypes <- .get_pkgTypes_from_URL(data[["Package"]], version)
     versions <- c("release", "devel")
     codecov <- .get_codecov_from_BugReports(
-        data[["BugReports"]], data[["Package"]]
+        data[["BugReports"]], data[["pkg"]]
     )
 
     templates <- c(
