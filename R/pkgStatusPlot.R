@@ -106,7 +106,7 @@ pkgStatusPlot <- function(
         url = ifelse(
             !is.na(.data[["Status"]]),
             paste0(
-                "https://bioconductor.org/checkResults/", version, "/",
+                "https://bioconductor.org/checkResults/", .env[["version"]], "/",
                 .data[["PkgType"]], "-LATEST/", .data[["Package"]], "/",
                 .data[["Hostname"]], "-", .data[["Stage"]], ".html"
             ),
