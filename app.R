@@ -11,4 +11,4 @@ options(repos = BiocManager::repositories())
 if (!requireNamespace("BiocPkgDash", quietly = TRUE))
     BiocManager::install("Bioconductor/BiocPkgDash")
 
-BiocPkgDash::BiocPkgDash() # add parameters here (if any)
+BiocPkgDash::BiocPkgDash(email = "maintainer@bioconductor.org") # add parameters here (if any)

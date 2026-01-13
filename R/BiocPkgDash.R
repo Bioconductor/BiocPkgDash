@@ -9,6 +9,8 @@
 #'   the status of the package checks on either the `release` or `devel`
 #'   branches of Bioconductor.
 #'
+#' @param email A character(1) vector providing the email of the maintainer.
+#' By default, the package will look for the email in the URL query.
 #' @param ... Additional parameters to pass to the `shinyApp()` function.
 #'
 #' @importFrom BiocPkgTools biocMaintained
@@ -21,7 +23,7 @@
 #'    BiocPkgDash()
 #' }
 #' @export
-BiocPkgDash <- function(...) {
+BiocPkgDash <- function(email = NULL, ...) {
     ui <- fluidPage(
         theme = bslib::bs_theme(bootswatch = "minty"),
         titlePanel(
@@ -56,6 +58,59 @@ BiocPkgDash <- function(...) {
                 width = 2
             ),
             mainPanel(
+                uiOutput("email_prompt_ui"),
+                uiOutput("dashboard_content_ui"),
+                width = 10
+            )
+        )
+    )
+
+    server <- function(input, output, session) {
+        observe({
+            query <- parseQueryString(session$clientData$url_search)
+            if (!is.null(query[["email"]])) {
+                updateTextInput(
+                    session = session,
+                    inputId = "email1-email",
+                    value = query[["email"]]
+                )
+            } else if (!is.null(email)) {
+                updateTextInput(
+                    session = session,
+                    inputId = "email1-email",
+                    value = email
+                )
+            }
+        })
+        email_data <- emailServer("email1")
+        biocver <- biocverServer("biocver1")
+        codecov <- codecovServer("codecov1")
+        topic_packages <- ghTopicServer("topic1", biocver = biocver)
+        bioctype <- bioctypeServer("bioctype1")
+        pkgs <- pkgsServer(
+            "pkgs1",
+            reset_signal = email_data$submit_email,
+            populate_signal = topic_packages
+        )
+
+        is_email_provided <- reactive({
+            !is.null(email_data$email()) && nzchar(email_data$email())
+        })
+
+        output$email_prompt_ui <- renderUI({
+            if (!is_email_provided()) {
+                div(
+                    style = "text-align: center; margin-top: 50px;",
+                    icon("envelope", "fa-5x", style = "color: #CCCCCC;"),
+                    h3("Please enter your email in the sidebar to see package information.")
+                )
+            } else {
+                NULL
+            }
+        })
+
+        output$dashboard_content_ui <- renderUI({
+            if (is_email_provided()) {
                 tabsetPanel(
                     tabPanel(
                         "Badges",
@@ -87,35 +142,15 @@ BiocPkgDash <- function(...) {
                         aboutPanel(),
                         value = "about"
                     )
-                ),
-                width = 10
-            )
-        )
-    )
-
-    server <- function(input, output, session) {
-        observe({
-            query <- parseQueryString(session$clientData$url_search)
-            if (!is.null(query[["email"]])) {
-                updateTextInput(
-                    session = session,
-                    inputId = "email1-email",
-                    value = query[["email"]]
                 )
+            } else {
+                NULL
             }
         })
-        email_data <- emailServer("email1")
-        biocver <- biocverServer("biocver1")
-        codecov <- codecovServer("codecov1")
-        topic_packages <- ghTopicServer("topic1", biocver = biocver)
-        bioctype <- bioctypeServer("bioctype1")
-        pkgs <- pkgsServer(
-            "pkgs1",
-            reset_signal = email_data$submit_email,
-            populate_signal = topic_packages
-        )
 
         maintainedData <- reactive({
+            req(biocver(), bioctype()) # Ensure biocver and bioctype are available
+
             withProgress(
                 message = "Fetching package data...",
                 detail = "This may take a moment",
@@ -130,7 +165,6 @@ BiocPkgDash <- function(...) {
                                     version = biocver()
                                 )
                             } else {
-                                req(email_data$email(), biocver(), bioctype())
                                 BiocPkgTools::biocMaintained(
                                     main = email_data$email(),
                                     version = biocver(),
