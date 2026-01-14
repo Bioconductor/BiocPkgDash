@@ -96,7 +96,7 @@ BiocPkgDash <- function(email = NULL, ...) {
                 )
             }
         })
-        email_data <- emailServer("email1")
+        email_data <- emailServer("email1", email = email)
         biocver <- biocverServer("biocver1")
         codecov <- codecovServer("codecov1")
         topic_packages <- ghTopicServer("topic1", biocver = biocver)

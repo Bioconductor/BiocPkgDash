@@ -1,8 +1,13 @@
-emailServer <- function(id) {
+emailServer <- function(id, email = "") {
     moduleServer(
         id,
         function(input, output, session) {
-            emailValue <- reactiveVal("")
+            if (!nzchar(email) && .config_file_exists()) {
+                email <- .get_config()[["email"]]
+            } else if (nzchar(email) && !.config_file_exists()) {
+                .set_config(email = email)
+            }
+            emailValue <- reactiveVal(email)
             observe({
                 query <- parseQueryString(session$clientData$url_search)
                 if (!is.null(query[["email"]])) {
@@ -12,6 +17,13 @@ emailServer <- function(id) {
                         value = query[["email"]]
                     )
                     emailValue(query[["email"]])
+                } else if (nzchar(email)) {
+                    updateTextInput(
+                        session = session,
+                        inputId = "email",
+                        value = email
+                    )
+                    emailValue(email)
                 }
             })
 
