@@ -26,6 +26,20 @@
 BiocPkgDash <- function(email = NULL, ...) {
     ui <- fluidPage(
         theme = bslib::bs_theme(bootswatch = "minty"),
+        tags$head(
+            tags$script(
+                HTML(
+                    "$(document).keyup(function(event) {
+                        if (
+                            $('#email1-email').is(':focus') &&
+                                (event.key === 'Enter')
+                        ) {
+                          $('#email1-submit_email').click();
+                        }
+                    });"
+                )
+            )
+        ),
         titlePanel(
             windowTitle = "BiocPkgDash",
             title = div(
