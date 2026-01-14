@@ -116,7 +116,12 @@ BiocPkgDash <- function(email = NULL, ...) {
                 div(
                     style = "text-align: center; margin-top: 50px;",
                     icon("envelope", "fa-5x", style = "color: #CCCCCC;"),
-                    h3("Please enter your email in the sidebar to see package information.")
+                    h3(
+                        paste(
+                            "Please enter a maintainer email in",
+                            "the sidebar to see package information."
+                        )
+                    )
                 )
             } else {
                 NULL
