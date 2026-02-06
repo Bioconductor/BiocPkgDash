@@ -7,7 +7,7 @@ author:
 output: BiocStyle::html_document
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 vignette: >
-  %\VignetteIndexEntry{shinybiocloader Overview}
+  %\VignetteIndexEntry{Bioconductor Package Dashboard Intro}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 package: BiocPkgDash
