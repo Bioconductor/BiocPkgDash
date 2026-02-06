@@ -9,9 +9,10 @@
 #'   the status of the package checks on either the `release` or `devel`
 #'   branches of Bioconductor.
 #'
-#' @param email A character(1) vector providing the email of the maintainer.
-#' By default, the package will look for the email in the URL query.
-#' @param ... Additional parameters to pass to the `shinyApp()` function.
+#' @param email A character(1) vector providing the email of the maintainer. By
+#'   default, the package will look for the email in the URL query.
+#'
+#' @param ... Additional parameters to pass to the [shiny::shinyApp()] function.
 #'
 #' @importFrom BiocPkgTools biocMaintained
 #' @import shiny

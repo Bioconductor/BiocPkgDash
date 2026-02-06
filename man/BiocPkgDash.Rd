@@ -4,10 +4,13 @@
 \alias{BiocPkgDash}
 \title{The Bioconductor Package Dashboard}
 \usage{
-BiocPkgDash(...)
+BiocPkgDash(email = NULL, ...)
 }
 \arguments{
-\item{...}{Additional parameters to pass to the `shinyApp()` function.}
+\item{email}{A character(1) vector providing the email of the maintainer.
+By default, the package will look for the email in the URL query.}
+
+\item{...}{Additional parameters to pass to the \code{\link[shiny:shinyApp]{shiny::shinyApp()}} function.}
 }
 \value{
 called for the side effect of initializing a shiny app
