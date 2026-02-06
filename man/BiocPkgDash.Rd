@@ -26,7 +26,7 @@ the status of the package checks on either the \code{release} or \code{devel}
 branches of Bioconductor.
 }
 \examples{
-if (interactive()) {
-   BiocPkgDash()
-}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+BiocPkgDash()
+\dontshow{\}) # examplesIf}
 }

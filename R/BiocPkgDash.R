@@ -19,10 +19,8 @@
 #'
 #' @return called for the side effect of initializing a shiny app
 #'
-#' @examples
-#' if (interactive()) {
-#'    BiocPkgDash()
-#' }
+#' @examplesIf interactive()
+#' BiocPkgDash()
 #' @export
 BiocPkgDash <- function(email = NULL, ...) {
     ui <- fluidPage(
