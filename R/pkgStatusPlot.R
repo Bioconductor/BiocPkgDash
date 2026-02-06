@@ -17,12 +17,12 @@
 #'
 #' @param status `character()` A vector of `INSTALL`, `build` and `check`
 #'   statuses to include in the plot. These values are obtained from the
-#'   `result` column in `BiocPkgTools::biocBuildReport()`. The default is all:
+#'   `result` column in [BiocPkgTools::biocBuildReport()]. The default is all:
 #'   `c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped")`.
 #'
 #' @param stage `character()` A vector of the Bioconductor Build System (BBS)
 #'   stages to include in the plot. These values are obtained from the `stage`
-#'   `BiocPkgTools::biocBuildReport()`. The default is all stages:
+#'   [BiocPkgTools::biocBuildReport()]. The default is all stages:
 #'   `c("install", "buildsrc", "checksrc", "buildbin")`.
 #'
 #' @importFrom BiocPkgTools biocMaintained

@@ -17,13 +17,13 @@ called for the side effect of initializing a shiny app
 }
 \description{
 A dashboard for Bioconductor package maintainers to monitor the
-  status of their packages. The key input to the dashboard is the email the
-  maintainer uses in their package's `DESCRIPTION` file. The dashboard
-  displays the badge statuses of the package in both the `release` or `devel`
-  branches of Bioconductor. The status is determined by the results of the
-  Bioconductor nightly builds. The dashboard also provides a visualization of
-  the status of the package checks on either the `release` or `devel`
-  branches of Bioconductor.
+status of their packages. The key input to the dashboard is the email the
+maintainer uses in their package's \code{DESCRIPTION} file. The dashboard
+displays the badge statuses of the package in both the \code{release} or \code{devel}
+branches of Bioconductor. The status is determined by the results of the
+Bioconductor nightly builds. The dashboard also provides a visualization of
+the status of the package checks on either the \code{release} or \code{devel}
+branches of Bioconductor.
 }
 \examples{
 if (interactive()) {

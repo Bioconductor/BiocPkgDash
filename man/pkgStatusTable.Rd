@@ -11,37 +11,37 @@ pkgStatusTable(
 )
 }
 \arguments{
-\item{data}{`tibble()` / `data.frame()` A table of maintained packages.
+\item{data}{\code{tibble()} / \code{data.frame()} A table of maintained packages.
 This is used internally to avoid repeated calls to the
-[BiocPkgTools::biocMaintained()] function.}
+\code{\link[BiocPkgTools:biocMaintained]{BiocPkgTools::biocMaintained()}} function.}
 
-\item{status}{`character()` The status of the builders to include in the
-table. These values are obtained from the `result` column in
-[BiocPkgTools::biocBuildReport()]. The default is all:
-`c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped")`.}
+\item{status}{\code{character()} The status of the builders to include in the
+table. These values are obtained from the \code{result} column in
+\code{\link[BiocPkgTools:biocBuildReport]{BiocPkgTools::biocBuildReport()}}. The default is all:
+\code{c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped")}.}
 
-\item{stage}{`character()` A vector of the Bioconductor Build System (BBS)
-stages to include in the plot. These values are obtained from the `stage`
-[BiocPkgTools::biocBuildReport()]. The default is all stages:
-`c("install", "buildsrc", "checksrc", "buildbin")`.}
+\item{stage}{\code{character()} A vector of the Bioconductor Build System (BBS)
+stages to include in the plot. These values are obtained from the \code{stage}
+\code{\link[BiocPkgTools:biocBuildReport]{BiocPkgTools::biocBuildReport()}}. The default is all stages:
+\code{c("install", "buildsrc", "checksrc", "buildbin")}.}
 }
 \value{
-A `tibble()` / `data.frame()` with the package build statuses for
-  the given `data` input.
+A \code{tibble()} / \code{data.frame()} with the package build statuses for
+the given \code{data} input.
 }
 \description{
 This function builds a table of package build statuses for a
- given Bioconductor version and email combination. It is mainly used for the
- Bioconductor Package Dashboard.
+given Bioconductor version and email combination. It is mainly used for the
+Bioconductor Package Dashboard.
 }
 \details{
 Note that binary build stages for the Linux builders are marked as
-  `skipped` in the table. This is because the binaries are built on GitHub
-  Actions and their result are not included in the Bioconductor Build System
-  (BBS) database. Provide the `data` argument to avoid recomputing the
-  list of maintained packages for a given email and Bioconductor version.
-  Annotation packages are not included in the table because they are not
-  built regularly by the BBS.
+\code{skipped} in the table. This is because the binaries are built on GitHub
+Actions and their result are not included in the Bioconductor Build System
+(BBS) database. Provide the \code{data} argument to avoid recomputing the
+list of maintained packages for a given email and Bioconductor version.
+Annotation packages are not included in the table because they are not
+built regularly by the BBS.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}

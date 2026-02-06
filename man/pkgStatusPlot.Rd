@@ -11,22 +11,22 @@ pkgStatusPlot(
 )
 }
 \arguments{
-\item{data}{`tibble()` / `data.frame()` A data frame of maintained packages.
+\item{data}{\code{tibble()} / \code{data.frame()} A data frame of maintained packages.
 This is used internally to avoid repeated calls to the
-[BiocPkgTools::biocMaintained()] function.}
+\code{\link[BiocPkgTools:biocMaintained]{BiocPkgTools::biocMaintained()}} function.}
 
-\item{status}{`character()` A vector of `INSTALL`, `build` and `check`
+\item{status}{\code{character()} A vector of \code{INSTALL}, \code{build} and \code{check}
 statuses to include in the plot. These values are obtained from the
-`result` column in `BiocPkgTools::biocBuildReport()`. The default is all:
-`c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped")`.}
+\code{result} column in \code{\link[BiocPkgTools:biocBuildReport]{BiocPkgTools::biocBuildReport()}}. The default is all:
+\code{c("OK", "WARNINGS", "ERROR", "TIMEOUT", "skipped")}.}
 
-\item{stage}{`character()` A vector of the Bioconductor Build System (BBS)
-stages to include in the plot. These values are obtained from the `stage`
-`BiocPkgTools::biocBuildReport()`. The default is all stages:
-`c("install", "buildsrc", "checksrc", "buildbin")`.}
+\item{stage}{\code{character()} A vector of the Bioconductor Build System (BBS)
+stages to include in the plot. These values are obtained from the \code{stage}
+\code{\link[BiocPkgTools:biocBuildReport]{BiocPkgTools::biocBuildReport()}}. The default is all stages:
+\code{c("install", "buildsrc", "checksrc", "buildbin")}.}
 }
 \value{
-An interactive `ggplotly` object.
+An interactive \code{ggplotly} object.
 }
 \description{
 This function generates a stacked bar plot of package statuses for
@@ -35,9 +35,9 @@ for the Bioconductor Package Dashboard.
 }
 \details{
 Note that binary build stages for the Linux builders are not
-  included in the plot. This is because the binaries are built on GitHub
-  Actions and their result are not included in the Bioconductor Build System
-  (BBS) database.
+included in the plot. This is because the binaries are built on GitHub
+Actions and their result are not included in the Bioconductor Build System
+(BBS) database.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
