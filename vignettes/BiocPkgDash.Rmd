@@ -48,7 +48,9 @@ BiocPkgDash()
 ```
 
 ```{r mainapp,echo=FALSE}
-knitr::include_graphics("../man/figures/BiocPkgDash.png")
+img_path <-
+    if (knitr::opts_knit$get("child")) "man/figures/" else "../man/figures/"
+knitr::include_graphics(paste0(img_path, "BiocPkgDash.png"))
 ```
 
 Note that the dashboard and this document is organized by the tab panels.
@@ -63,7 +65,9 @@ with use one of the methods to filter for packages. Primarily, the user will
 filter by the relevant maintainer email.
 
 ```{r sidebarpanel,echo=FALSE}
-knitr::include_graphics("../man/figures/BiocPkgDash_filter.png")
+img_path <-
+    if (knitr::opts_knit$get("child")) "man/figures/" else "../man/figures/"
+knitr::include_graphics(paste0(img_path, "BiocPkgDash_filter.png"))
 ```
 
 ### GitHub topic filter
@@ -81,7 +85,9 @@ The badge wall displays the build status and code coverage for each package.
 Clicking on a badge will take you to the relevant page for more details.
 
 ```{r badgewall,echo=FALSE}
-knitr::include_graphics("../man/figures/BiocPkgDash_badges.png")
+img_path <-
+    if (knitr::opts_knit$get("child")) "man/figures/" else "../man/figures/"
+knitr::include_graphics(paste0(img_path, "BiocPkgDash_badges.png"))
 ```
 
 Note that the coverage badges can be turned off if the maintainer does not use
@@ -101,7 +107,9 @@ across different stages of the Bioconductor Build System (BBS). This helps
 maintainers quickly identify any issues with their packages.
 
 ```{r pkgStatus,echo=FALSE}
-knitr::include_graphics("../man/figures/BiocPkgDash_status.png")
+img_path <-
+    if (knitr::opts_knit$get("child")) "man/figures/" else "../man/figures/"
+knitr::include_graphics(paste0(img_path, "BiocPkgDash_status.png"))
 ```
 
 Note that clicking on any of the status bars in the plot takes the user to
