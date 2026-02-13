@@ -6,7 +6,7 @@ knit: (function(inputFile, encoding) {
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-    root.dir = "../../",
+    root.dir = ".",
     collapse = TRUE,
     comment = "#>",
     fig.path = "man/figures/README-",
