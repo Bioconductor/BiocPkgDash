@@ -20,7 +20,15 @@ badgesServer <- function(id, data, codecov) {
                         dom = "ftp",
                         pageLength = 20,
                         lengthChange = FALSE,
-                        paging = TRUE
+                        paging = TRUE,
+                        initComplete = DT::JS(
+                            "function(settings, json) {
+                                Shiny.setInputValue(
+                                    'badges1-badge_render_complete',
+                                    Math.random()
+                                );
+                            }"
+                        )
                     )
                 )
             })
@@ -31,7 +39,12 @@ badgesServer <- function(id, data, codecov) {
                 else
                     NULL
             })
-            return(selected_package)
+            list(
+                selected_package = selected_package,
+                render_complete = reactive({
+                    input$badge_render_complete
+                })
+            )
         }
     )
 }

@@ -166,60 +166,62 @@ BiocPkgDash <- function(email = NULL, ...) {
             }
         })
 
+        progress <- reactiveVal(NULL)
+
         maintainedData <- reactive({
             # Ensure biocver and bioctype are available
             req(biocver(), bioctype())
 
-            withProgress(
+            p <- shiny::Progress$new()
+            p$set(
                 message = "Fetching package data...",
                 detail = "This may take a moment",
-                value = 0.5,
+                value = 0.5
+            )
+            progress(p)
+            result <- tryCatch(
                 {
-                    result <- tryCatch(
-                        {
-                            if (length(pkgs()) || length(topic_packages())) {
-                                packages <- c(pkgs(), topic_packages())
-                                BiocPkgList(
-                                    packages = packages,
-                                    version = biocver()
-                                )
-                            } else {
-                                BiocPkgTools::biocMaintained(
-                                    main = email_data$email(),
-                                    version = biocver(),
-                                    pkgType = bioctype()
-                                )
-                            }
-                        },
-                        error = function(e) {
-                            showNotification(
-                                paste(
-                                    "An error occurred while fetching ",
-                                    "package data:",
-                                    e$message
-                                ),
-                                type = "error",
-                                duration = 15
-                            )
-                            return(NULL)
-                        }
-                    )
-                    validate(
-                        need(
-                            !is.null(result) && nrow(result),
-                            paste(
-                                "No packages found for that email or ",
-                                "packages provided are not in Bioconductor.",
-                                "\nPlease verify the email address is correct",
-                                " and is associated with\npackages for the",
-                                " selected Bioconductor version and",
-                                " package type(s)."
-                            )
+                    if (length(pkgs()) || length(topic_packages())) {
+                        packages <- c(pkgs(), topic_packages())
+                        BiocPkgList(
+                            packages = packages,
+                            version = biocver()
                         )
+                    } else {
+                        BiocPkgTools::biocMaintained(
+                            main = email_data$email(),
+                            version = biocver(),
+                            pkgType = bioctype()
+                        )
+                    }
+                },
+                error = function(e) {
+                    showNotification(
+                        paste(
+                            "An error occurred while fetching ",
+                            "package data:",
+                            e$message
+                        ),
+                        type = "error",
+                        duration = 15
                     )
-                    return(result)
+                    return(NULL)
                 }
             )
+            validate(
+                need(
+                    !is.null(result) && nrow(result),
+                    paste(
+                        "No packages found for that email or ",
+                        "packages provided are not in Bioconductor.",
+                        "\nPlease verify the email address is correct",
+                        " and is associated with\npackages for the",
+                        " selected Bioconductor version and",
+                        " package type(s)."
+                    )
+                )
+            )
+            result
         })
 
         clicked_package <- badgesServer(
@@ -239,7 +241,7 @@ BiocPkgDash <- function(email = NULL, ...) {
         )
         depReportServer(
             "report1",
-            package_name = clicked_package,
+            package_name = clicked_package$selected_package,
             biocver = biocver,
             bioctype = bioctype
         )
@@ -251,6 +253,13 @@ BiocPkgDash <- function(email = NULL, ...) {
             "data1",
             data = maintainedData
         )
+
+        observeEvent(clicked_package$render_complete(), {
+            if (!is.null(progress())) {
+                progress()$close()
+                progress(NULL)
+            }
+        }, ignoreInit = TRUE)
 
         output$sessioninfo <- renderPrint({
             if (requireNamespace("sessioninfo", quietly = TRUE))
