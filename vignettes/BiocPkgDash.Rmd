@@ -26,6 +26,22 @@ badges indicating the build status and code coverage for each package. The
 tool is primarily designed for Bioconductor package maintainers to monitor the
 status of their packages.
 
+## Comparison to Bioconductor Build Results
+
+The Bioconductor Build Results [page](https://bioconductor.org/checkResults)
+provides a comprehensive overview of the build status of all Bioconductor
+packages. However, it can be overwhelming for maintainers who are only
+interested in the status of their own packages. The `BiocPkgDash` dashboard
+provides a more focused view of the status of packages maintained by a specific
+email, allowing maintainers to quickly identify any issues with their packages
+without having to navigate through the entire list of packages on the Build
+Results page.
+
+Users can quickly go the relevant section in the Bioconductor Build Results
+page by clicking on the badges or the status bars in the dashboard. This allows
+maintainers to easily access more detailed information about the build status
+of their packages.
+
 # Installation
 
 ```{r install, eval=FALSE}
