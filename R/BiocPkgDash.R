@@ -33,7 +33,7 @@ BiocPkgDash <- function(email = NULL, ...) {
                             $('#email1-email').is(':focus') &&
                                 (event.key === 'Enter')
                         ) {
-                          $('#email1-submit_email').click();
+                            $('#email1-submit_email').click();
                         }
                     });"
                 )
