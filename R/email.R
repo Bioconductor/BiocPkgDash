@@ -2,7 +2,7 @@ emailServer <- function(id, email = "") {
     moduleServer(
         id,
         function(input, output, session) {
-            if (!nzchar(email) && .config_file_exists()) {
+            if ((is.null(email) || !nzchar(email)) && .config_file_exists()) {
                 email <- .get_config()[["email"]]
             } else if (nzchar(email) && !.config_file_exists()) {
                 .set_config(email = email)
