@@ -167,7 +167,8 @@ BiocPkgDash <- function(email = NULL, ...) {
         })
 
         maintainedData <- reactive({
-            req(biocver(), bioctype()) # Ensure biocver and bioctype are available
+            # Ensure biocver and bioctype are available
+            req(biocver(), bioctype())
 
             withProgress(
                 message = "Fetching package data...",
