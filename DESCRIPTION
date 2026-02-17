@@ -29,7 +29,8 @@ Imports:
   tibble,
   tidyr,
   utils,
-  whisker
+  whisker,
+  yaml
 Suggests:
   BiocStyle,
   knitr,
