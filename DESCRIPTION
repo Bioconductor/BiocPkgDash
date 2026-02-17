@@ -1,7 +1,7 @@
 Package: BiocPkgDash
 Type: Package
 Title: An interactive Shiny dashboard for Bioconductor package maintainers
-Version: 0.99.41
+Version: 0.99.42
 Authors@R: c(
   person(
     "Marcel", "Ramos", , "marcel.ramos@sph.cuny.edu", c("aut", "cre"),
@@ -14,7 +14,7 @@ Description: This package provides an interactive Shiny dashboard for
   metadata, and development metrics, offering insights into package health and
   activity. This tool aims to support maintainers of multiple packages by
   filtering packages via maintainer email.
-Depends: R (>= 4.5.0), shiny
+Depends: R (>= 4.6.0), shiny
 Imports:
   BiocBaseUtils,
   BiocPkgTools (>= 1.27.6),
