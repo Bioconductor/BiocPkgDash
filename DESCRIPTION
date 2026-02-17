@@ -9,8 +9,11 @@ Authors@R: c(
   ),
   person("Vincent", "Carey", , "stvjc@channing.harvard.edu", "aut")
   )
-Description: The package interactively renders an HTML table of packages
-  associated with the given emails.
+Description: This package provides an interactive Shiny dashboard for
+  Bioconductor package maintainers. It visualizes various package statuses,
+  metadata, and development metrics, offering insights into package health and
+  activity. This tool aims to support maintainers of multiple packages by
+  filtering packages via maintainer email.
 Depends: R (>= 4.5.0), shiny
 Imports:
   BiocBaseUtils,
