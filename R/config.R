@@ -8,13 +8,11 @@
 
 .create_config_file <- function() {
     config_path <- .get_config_path()
-    if (!dir.exists(config_path)) {
+    if (!dir.exists(config_path))
         dir.create(config_path, recursive = TRUE)
-    }
     config_file <- .get_config_file()
-    if (!file.exists(config_file)) {
+    if (!file.exists(config_file))
         file.create(config_file)
-    }
 }
 
 .get_config <- function() {
