@@ -2,9 +2,10 @@ emailServer <- function(id, email = "") {
     moduleServer(
         id,
         function(input, output, session) {
-            if ((is.null(email) || !nzchar(email)) && .config_file_exists()) {
+            hasEmail <- !is.null(email) && nzchar(email)
+            if (!hasEmail && .config_file_exists()) {
                 email <- .get_config()[["email"]]
-            } else if (nzchar(email) && !.config_file_exists()) {
+            } else if (hasEmail && !.config_file_exists()) {
                 .set_config(email = email)
             }
             emailValue <- reactiveVal(email)
