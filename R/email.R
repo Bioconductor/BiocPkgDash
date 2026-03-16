@@ -18,7 +18,7 @@ emailServer <- function(id, email = "") {
                         value = query[["email"]]
                     )
                     emailValue(query[["email"]])
-                } else if (nzchar(email)) {
+                } else if (!is.null(email) && nzchar(email)) {
                     updateTextInput(
                         session = session,
                         inputId = "email",
