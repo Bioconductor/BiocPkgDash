@@ -24,6 +24,7 @@
 #' @export
 BiocPkgDash <- function(email = NULL, ...) {
     ui <- fluidPage(
+        shinyjs::useShinyjs(),
         theme = bslib::bs_theme(bootswatch = "minty"),
         tags$head(
             tags$script(
@@ -72,7 +73,23 @@ BiocPkgDash <- function(email = NULL, ...) {
             ),
             mainPanel(
                 uiOutput("email_prompt_ui"),
-                uiOutput("dashboard_content_ui"),
+                div(
+                    id = "dashboard_content",
+                    style = "display: none;",
+                    tabsetPanel(
+                        tabPanel(
+                            "Badges",
+                            fluidRow(
+                                column(width = 9, badgesUI("badges1")),
+                                column(width = 3, cardsUI("cards1"))
+                            )
+                        ),
+                        tabPanel("Status", statusUI("status1")),
+                        tabPanel("Dependencies", depReportUI("report1")),
+                        tabPanel("Metadata", metadataUI("data1")),
+                        tabPanel("About", aboutPanel(), value = "about")
+                    )
+                ),
                 width = 10
             )
         )
@@ -127,49 +144,17 @@ BiocPkgDash <- function(email = NULL, ...) {
             }
         })
 
-        output$dashboard_content_ui <- renderUI({
-            if (is_email_provided()) {
-                tabsetPanel(
-                    tabPanel(
-                        "Badges",
-                        fluidRow(
-                            column(
-                                width = 9,
-                                badgesUI("badges1")
-                            ),
-                            column(
-                                width = 3,
-                                cardsUI("cards1")
-                            )
-                        )
-                    ),
-                    tabPanel(
-                        "Status",
-                        statusUI("status1")
-                    ),
-                    tabPanel(
-                        "Dependencies",
-                        depReportUI("report1")
-                    ),
-                    tabPanel(
-                        "Metadata",
-                        metadataUI("data1")
-                    ),
-                    tabPanel(
-                        "About",
-                        aboutPanel(),
-                        value = "about"
-                    )
-                )
-            } else {
-                NULL
-            }
+        observe({
+            if (is_email_provided())
+                shinyjs::show("dashboard_content")
+            else
+                shinyjs::hide("dashboard_content")
         })
 
-        progress <- reactiveVal(NULL)
-
         maintainedData <- reactive({
-            # Ensure biocver and bioctype are available
+            ## waiting for email input
+            req(is_email_provided())
+            ## Ensure biocver and bioctype are available
             req(biocver(), bioctype())
 
             p <- shiny::Progress$new()
@@ -178,7 +163,9 @@ BiocPkgDash <- function(email = NULL, ...) {
                 detail = "This may take a moment",
                 value = 0.5
             )
-            progress(p)
+            on.exit({
+                p$close()
+            })
             result <- tryCatch(
                 {
                     if (length(pkgs()) || length(topic_packages())) {
@@ -253,13 +240,6 @@ BiocPkgDash <- function(email = NULL, ...) {
             "data1",
             data = maintainedData
         )
-
-        observeEvent(clicked_package$render_complete(), {
-            if (!is.null(progress())) {
-                progress()$close()
-                progress(NULL)
-            }
-        }, ignoreInit = TRUE)
 
         output$sessioninfo <- renderPrint({
             if (requireNamespace("sessioninfo", quietly = TRUE))

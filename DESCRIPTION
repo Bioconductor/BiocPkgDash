@@ -29,6 +29,7 @@ Imports:
   plotly,
   rmarkdown,
   shinybiocloader,
+  shinyjs,
   tibble,
   tidyr,
   utils,
