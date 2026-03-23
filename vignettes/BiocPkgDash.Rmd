@@ -57,6 +57,18 @@ BiocManager::install("BiocPkgDash")
 library(BiocPkgDash)
 ```
 
+Note that the app uses `r BiocStyle::Biocpkg("BiocPkgTools")` to download
+package information from the Bioconductor Build System (BBS) database. This is
+required for the app to function properly and can be safely created. The prompt
+may look like the following (path varies by operating system):
+
+```
+/Users/user/.cache/R/BiocFileCache
+    does not exist, create directory? (yes/no): yes
+```
+
+Create the cache directory by entering `yes` and pressing `Enter`.
+
 # Dashboard display
 
 ```{r display,eval=FALSE}
