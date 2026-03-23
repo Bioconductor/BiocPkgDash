@@ -13,6 +13,23 @@ indicating the build status and code coverage for each package. The tool
 is primarily designed for Bioconductor package maintainers to monitor
 the status of their packages.
 
+## Comparison to Bioconductor Build Results
+
+The Bioconductor Build Results
+[page](https://bioconductor.org/checkResults) provides a comprehensive
+overview of the build status of all Bioconductor packages. However, it
+can be overwhelming for maintainers who are only interested in the
+status of their own packages. The `BiocPkgDash` dashboard provides a
+more focused view of the status of packages maintained by a specific
+email, allowing maintainers to quickly identify any issues with their
+packages without having to navigate through the entire list of packages
+on the Build Results page.
+
+Users can quickly go the relevant section in the Bioconductor Build
+Results page by clicking on the badges or the status bars in the
+dashboard. This allows maintainers to easily access more detailed
+information about the build status of their packages.
+
 # Installation
 
 ``` r
@@ -27,6 +44,18 @@ BiocManager::install("BiocPkgDash")
 ``` r
 library(BiocPkgDash)
 ```
+
+Note that the app uses
+*[BiocPkgTools](https://bioconductor.org/packages/3.23/BiocPkgTools)* to
+download package information from the Bioconductor Build System (BBS)
+database. This is required for the app to function properly and can be
+safely created. The prompt may look like the following (path varies by
+operating system):
+
+    /Users/user/.cache/R/BiocFileCache
+        does not exist, create directory? (yes/no): yes
+
+Create the cache directory by entering `yes` and pressing `Enter`.
 
 # Dashboard display
 
